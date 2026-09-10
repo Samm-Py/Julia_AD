@@ -316,17 +316,17 @@ The constant coefficient is $F(t)$.
 \subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)} in OTI arithmetic}
 \label{sec:example-oti}
 Use the function and evaluation point of Section~\ref{sec:example-ctse}, now
-with truncation order $p=2$. Seed $\widehat t=1+\varepsilon$ and impose $\varepsilon^3=0$. The square is obtained by
+with truncation order $p=2$. Seed $t^*=1+\varepsilon$ and impose $\varepsilon^3=0$. The square is obtained by
 multiplying two OTI numbers $a=b=1+\varepsilon$:
 \[
- \widehat v=\widehat t\,\widehat t=1+2\varepsilon+\varepsilon^2.
+ v^*=t^*\,t^*=1+2\varepsilon+\varepsilon^2.
 \]
-The coefficients of $\widehat v$ are therefore $1$, $2$, and $1$. The next operation
-is $g(v)=\exp(v)$. Its input is the OTI number $\widehat v$, which is decomposed
+The coefficients of $v^*$ are therefore $1$, $2$, and $1$. The next operation
+is $g(v)=\exp(v)$. Its input is the OTI number $v^*$, which is decomposed
 into a real part and a perturbation expressed in powers of $\varepsilon$:
 \begin{equation}
 \label{eq:oti-example-real-part}
- \widehat v=v_0+2\varepsilon+\varepsilon^2,\qquad v_0=1.
+ v^*=v_0+2\varepsilon+\varepsilon^2,\qquad v_0=1.
 \end{equation}
 The Taylor series expansion (TSE) is taken \emph{about the real part $v_0$}.
 Before substituting the OTI input, write the expansion at a general argument $s$:
@@ -337,7 +337,7 @@ Before substituting the OTI input, write the expansion at a general argument $s$
        +\sum_{j=3}^{\infty}\frac{g^{(j)}(v_0)}{j!}(s-v_0)^j.
 \end{equation}
 Now evaluate Equation~\eqref{eq:oti-example-tse} at the full OTI argument
-$s=\widehat v=v_0+2\varepsilon+\varepsilon^2$. The displacement from the
+$s=v^*=v_0+2\varepsilon+\varepsilon^2$. The displacement from the
 expansion point is $(v_0+2\varepsilon+\varepsilon^2)-v_0=2\varepsilon+\varepsilon^2$,
 giving
 \begin{align}
@@ -370,7 +370,7 @@ Collecting equal powers of $\varepsilon$ yields the output of the overloaded
 exponential:
 \begin{equation}
 \label{eq:example-oti}
- \widehat f=\mathrm e+2\mathrm e\,\varepsilon
+ f^*=\mathrm e+2\mathrm e\,\varepsilon
        +\mathrm e\,\varepsilon^2+2\mathrm e\,\varepsilon^2
        =\mathrm e+2\mathrm e\,\varepsilon+3\mathrm e\,\varepsilon^2.
 \end{equation}
@@ -472,10 +472,10 @@ the matrix chosen to carry the seed.
 
 \subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)} in the CR representation}
 \label{sec:example-cr}
-Represent the order-two seed $\widehat t=1+\varepsilon$ from
+Represent the order-two seed $t^*=1+\varepsilon$ from
 Section~\ref{sec:example-oti} by the ordinary real matrix
 \[
- T=C(\widehat t)=I_3+N=
+ T=C(t^*)=I_3+N=
  \begin{bmatrix}1&0&0\\1&1&0\\0&1&1\end{bmatrix}.
 \]
 The same evaluation trace becomes a matrix multiplication followed by a matrix
