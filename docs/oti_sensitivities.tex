@@ -580,6 +580,40 @@ exponential routine applied to Equation~\eqref{eq:matrix-cr} therefore returns
 the representation of the OTI result.
 
 
+\subsubsection{Worked example: \texorpdfstring{$F(t)=\exp(tH)$}{F(t) = exp(tH)} for a matrix argument}
+\label{sec:example-cr-matrix}
+Take the constant real matrix and matrix-valued function
+\[
+ H=\begin{bmatrix}0&1\\-1&0\end{bmatrix},\qquad
+ F(t)=\exp(tH)=\begin{bmatrix}\cos t&\sin t\\-\sin t&\cos t\end{bmatrix},
+\]
+and seed the parameter as $t+\varepsilon$ at order one. The argument
+$M=(t+\varepsilon)H$ has blocks $M_0=tH$ and $M_1=H$, so
+\[
+ \mathcal C(M)=\begin{bmatrix}tH&0\\H&tH\end{bmatrix}
+ =\left[\begin{array}{cc|cc}
+   0&t&0&0\\
+   -t&0&0&0\\\hline
+   0&1&0&t\\
+   -1&0&-t&0
+  \end{array}\right].
+\]
+Exponentiating this ordinary real $4\times4$ matrix gives
+\[
+ \exp\bigl(\mathcal C(M)\bigr)
+ =\begin{bmatrix}\exp(tH)&0\\ H\exp(tH)&\exp(tH)\end{bmatrix},
+\]
+whose first block column holds
+\[
+ \begin{bmatrix}\cos t&\sin t\\-\sin t&\cos t\end{bmatrix}
+ \qquad\text{above}\qquad
+ \begin{bmatrix}-\sin t&\cos t\\-\cos t&-\sin t\end{bmatrix}:
+\]
+that is $F(t)$ above $F'(t)$, as differentiating $F$ entrywise confirms. A
+single real matrix exponential has produced both.
+Section~\ref{sec:oti-thermal} is this calculation at full size, with $H$ the
+augmented thermal matrix and the seed carried to order four.
+
 \clearpage
 \section{Implementation}
 \label{sec:implementation}
