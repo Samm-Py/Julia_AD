@@ -459,10 +459,6 @@ angle-addition formula applies:
 Its first column is $[\sin t,\cos t]^{T}$, again $[f(t),f'(t)]$, now with the
 value and the derivative distinct.
 
-The first column carries the answer because $C(a)$ is lower triangular with
-constant diagonals: its first column is precisely the coefficients
-$a_0,a_1,\dots,a_p$.
-
 Nothing about the seed changes with the truncation order. It is the same OTI
 number $t+\varepsilon$ throughout; raising $p$ only enlarges the matrices that
 carry it, since $\varepsilon^{p+1}=0$ requires $N^{p+1}=0$ and $N$ is
@@ -471,10 +467,10 @@ $(p+1)\times(p+1)$. At order $p$ the seed is therefore represented by
 \label{eq:cr-seed}
  C(t+\varepsilon)=tI_{p+1}+N=
  \begin{bmatrix}
-  t & & & \\
-  1 & t & & \\
-    & \ddots & \ddots & \\
-    & & 1 & t
+  t      & 0      & \cdots & 0      \\
+  1      & t      & \ddots & \vdots \\
+  0      & \ddots & \ddots & 0      \\
+  0      & \cdots & 1      & t
  \end{bmatrix}
  \in\mathbb R^{(p+1)\times(p+1)},
 \end{equation}
