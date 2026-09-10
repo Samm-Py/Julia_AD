@@ -288,35 +288,7 @@ is evaluated at the full OTI input as
      \left(\sum_{r=1}^{p}a_r\varepsilon^r\right)^j.
 \end{equation}
 Powers above $p$ vanish because the displacement has zero constant coefficient
-and $\varepsilon^{p+1}=0$. Take $g=\exp$ at order two, so that
-$g^{(j)}(a_0)=\exp(a_0)$ for every $j$ and the displacement is
-$a_1\varepsilon+a_2\varepsilon^2$. Squaring the displacement and discarding
-terms above order two,
-\begin{equation}
-\label{eq:oti-displacement-square}
- (a_1\varepsilon+a_2\varepsilon^2)^2
- =a_1^2\varepsilon^2+2a_1a_2\varepsilon^3+a_2^2\varepsilon^4
- =a_1^2\varepsilon^2,
-\end{equation}
-since $\varepsilon^3=\varepsilon^4=0$. The cube and all higher powers vanish
-for the same reason, so the sum in Equation~\eqref{eq:oti-function} stops at
-$j=2$:
-\begin{align}
- \exp(a_0+a_1\varepsilon+a_2\varepsilon^2)
- &=\exp(a_0)\left[1+(a_1\varepsilon+a_2\varepsilon^2)
-                  +\frac{(a_1\varepsilon+a_2\varepsilon^2)^2}{2}\right]
-   \notag\\
- &=\exp(a_0)\left[1+a_1\varepsilon+a_2\varepsilon^2
-                  +\frac{a_1^2}{2}\varepsilon^2\right]
-   \notag\\
- &=\exp(a_0)+\exp(a_0)\,a_1\varepsilon
-   +\exp(a_0)\Bigl(a_2+\tfrac{a_1^2}{2}\Bigr)\varepsilon^2.
- \label{eq:oti-exp-order2}
-\end{align}
-Every coefficient in Equation~\eqref{eq:oti-exp-order2} is an ordinary real
-number, formed from $a_0$, $a_1$, $a_2$ and the derivatives of $\exp$ evaluated
-at the real part $a_0$ alone.
-A calculation composed of supported operations then propagates coefficients
+and $\varepsilon^{p+1}=0$. A calculation composed of supported operations then propagates coefficients
 through the same sequence of function evaluations. Section~\ref{sec:cr}
 provides an equivalent real matrix representation; the implementation in
 Section~\ref{sec:oti-thermal} uses that representation rather than defining
