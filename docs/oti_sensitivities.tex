@@ -433,32 +433,63 @@ implements OTI multiplication. The convention adopted here uses lower triangular
 and coefficients ordered by increasing degree. An upper triangular convention
 would require corresponding changes in extraction.
 
-For a square matrix whose entries are OTI numbers, collect the coefficients
-of equal degree into ordinary real matrices:
+\subsubsection{Univariate functions in the representation}
+\label{sec:cr-univariate}
+Because $C$ preserves sums and products, it preserves every polynomial and
+therefore every convergent power series. For an analytic $f$,
 \begin{equation}
-\label{eq:matrix-coefficients}
- M=M_0+M_1\varepsilon+M_2\varepsilon^2,
- \qquad M_j\in\mathbb R^{m\times m}.
+\label{eq:cr-homomorphism}
+ f\bigl(C(a)\bigr)=C\bigl(f(a)\bigr),
 \end{equation}
-Specifically, if entry $(r,s)$ is
-$M_{rs}=m_{rs,0}+m_{rs,1}\varepsilon+m_{rs,2}\varepsilon^2$, then
-$(M_j)_{rs}=m_{rs,j}$. Thus $M_j$ contains the order-$j$ coefficient of every
-entry of $M$; its entries are real scalars, not OTI numbers.
-The corresponding representation is a \emph{block matrix of coefficient matrices}:
-\begin{equation}
-\label{eq:matrix-cr}
- \mathcal C(M)=\begin{bmatrix}M_0&0&0\\M_1&M_0&0\\M_2&M_1&M_0\end{bmatrix}
- \in\mathbb R^{3m\times3m}.
-\end{equation}
-Every displayed block in Equation~\eqref{eq:matrix-cr}, including each zero block,
-has size $m\times m$. The complete block array is an ordinary real
-$3m\times3m$ matrix, suitable for real matrix operations. At truncation order $p$, the assembled matrix has size
-$(p+1)m\times(p+1)m$.
+where the left-hand side is the \emph{matrix} function of $C(a)$, evaluated
+through matrix multiplication, and not $f$ applied separately to each entry.
+Evaluating a matrix function of the representation therefore returns the
+representation of the OTI result, and no OTI scalar type is required.
 
-It preserves matrix products, including their order. Because the exponential is
-defined by a convergent series of sums and products, it also preserves the
-matrix exponential. This lets a real-valued numerical routine evaluate the
-OTI exponential without requiring a custom scalar type.
+At first order, seed the input as $t+\varepsilon$ with $\varepsilon^2=0$. The
+real number $t$ contributes $tI_2$ and the seed contributes $N$, so
+\[
+ C(t+\varepsilon)=tI_2+N=\begin{bmatrix}t&0\\1&t\end{bmatrix}.
+\]
+Take $f=\exp$. The two terms commute and $N^2=0$, so the series defining the
+matrix exponential terminates after two terms:
+\[
+ \exp(tI_2+N)=\mathrm e^{t}(I_2+N)
+ =\begin{bmatrix}\mathrm e^{t}&0\\ \mathrm e^{t}&\mathrm e^{t}\end{bmatrix}.
+\]
+Its first column is $[\mathrm e^{t},\mathrm e^{t}]^{T}$, which is
+$[f(t),f'(t)]$. Because $\exp$ is its own derivative, this example on its own
+cannot separate the method from a coincidence; taking $f=\sin$ instead gives
+the first column $[\sin t,\cos t]^{T}$.
+
+The first column carries the answer because $C(a)$ is lower triangular with
+constant diagonals: its first column is precisely the coefficients
+$a_0,a_1,\dots,a_p$.
+
+At truncation order $p$ the same seed gives a $(p+1)\times(p+1)$ matrix with $t$
+on the diagonal and ones on the first subdiagonal. Applying
+Equation~\eqref{eq:cr-homomorphism},
+\begin{equation}
+\label{eq:cr-column}
+ C\bigl(f(t+\varepsilon)\bigr)\ \text{has first column}\
+ \Bigl[f(t),\ \frac{f'(t)}{1!},\ \frac{f''(t)}{2!},\ \dots,\
+       \frac{f^{(p)}(t)}{p!}\Bigr]^{T}.
+\end{equation}
+These entries are Taylor coefficients, not derivatives. At first order the
+distinction is invisible because $1!=1$; at second order it is not. For
+$f=\exp$ at order two,
+\[
+ \exp\!\begin{bmatrix}t&0&0\\1&t&0\\0&1&t\end{bmatrix}
+ =\mathrm e^{t}\begin{bmatrix}1&0&0\\1&1&0\\ \tfrac12&1&1\end{bmatrix},
+\]
+whose first column is $[\mathrm e^{t},\mathrm e^{t},\mathrm e^{t}/2]^{T}$. The
+second derivative follows from the factorial scaling of
+Equation~\eqref{eq:oti-extraction}, as $2!\,(\mathrm e^{t}/2)=\mathrm e^{t}$.
+
+Nothing here is truncated by hand. The power series of $f$ terminates on its
+own because $N^{p+1}=0$, and the truncation order is fixed once, by the size of
+the matrix chosen to carry the seed.
+
 
 
 \newpage
@@ -499,6 +530,35 @@ matrix-exponential routine computes $\exp(V)$. These are matrix operations,
 not entrywise squaring or exponentiation. The matrix representation changes
 how the coefficients are stored and propagated; the factorial extraction rule
 remains the same as in Section~\ref{sec:oti}.
+
+\subsubsection{Matrices of OTI numbers}
+\label{sec:cr-matrices}
+For a square matrix whose entries are OTI numbers, collect the coefficients
+of equal degree into ordinary real matrices:
+\begin{equation}
+\label{eq:matrix-coefficients}
+ M=M_0+M_1\varepsilon+M_2\varepsilon^2,
+ \qquad M_j\in\mathbb R^{m\times m}.
+\end{equation}
+Specifically, if entry $(r,s)$ is
+$M_{rs}=m_{rs,0}+m_{rs,1}\varepsilon+m_{rs,2}\varepsilon^2$, then
+$(M_j)_{rs}=m_{rs,j}$. Thus $M_j$ contains the order-$j$ coefficient of every
+entry of $M$; its entries are real scalars, not OTI numbers.
+The corresponding representation is a \emph{block matrix of coefficient matrices}:
+\begin{equation}
+\label{eq:matrix-cr}
+ \mathcal C(M)=\begin{bmatrix}M_0&0&0\\M_1&M_0&0\\M_2&M_1&M_0\end{bmatrix}
+ \in\mathbb R^{3m\times3m}.
+\end{equation}
+Every displayed block in Equation~\eqref{eq:matrix-cr}, including each zero block,
+has size $m\times m$. The complete block array is an ordinary real
+$3m\times3m$ matrix, suitable for real matrix operations. At truncation order $p$, the assembled matrix has size
+$(p+1)m\times(p+1)m$.
+
+It preserves matrix products, including their order. Because the exponential is
+defined by a convergent series of sums and products, it also preserves the
+matrix exponential. This lets a real-valued numerical routine evaluate the
+OTI exponential without requiring a custom scalar type.
 
 \clearpage
 \section{Implementation}
