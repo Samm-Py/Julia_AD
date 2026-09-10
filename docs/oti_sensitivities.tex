@@ -25,8 +25,9 @@
 \label{sec:background}
 This section introduces differentiation methods for a generic scalar or
 vector-valued function $F(t)$ of one real parameter. Section~\ref{sec:implementation}
-applies these methods to the repository by identifying the changes to the
-original numerical calculation. Section~\ref{sec:results} presents the comparisons.
+applies these methods to the example problem in
+\texttt{MatrixExponentialTest.jl}, identifying the changes to the original
+numerical calculation. Section~\ref{sec:results} presents the comparisons.
 
 \subsection{Automatic differentiation}
 \label{sec:introduction}
@@ -557,10 +558,10 @@ OTI exponential without requiring a custom scalar type.
 \label{sec:implementation}
 \subsection{Original response calculation}
 \label{sec:baseline}
-The repository example evaluates a vector response $F(\Delta t)$ containing ten
-final voxel temperatures. The differentiation parameter is the duration
-$\Delta t$, nominally 50 s; the arrays $A,B,e,x_k,u$ remain fixed. The original
-\texttt{MatrixExponentialTest.jl} is retained without modification. Separate
+The example problem in \texttt{MatrixExponentialTest.jl} evaluates a vector
+response $F(\Delta t)$ containing ten final voxel temperatures. The
+differentiation parameter is the duration $\Delta t$, nominally 50 s; the
+arrays $A,B,e,x_k,u$ remain fixed. The script is retained without modification. Separate
 entry points, \texttt{CTSEExample.jl} and \texttt{CRExample.jl}, call reusable
 functions implementing the methods of Section~\ref{sec:background}.
 
