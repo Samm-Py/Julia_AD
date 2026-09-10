@@ -429,7 +429,8 @@ therefore every convergent power series. For an analytic $f$,
 \label{eq:cr-homomorphism}
  f\bigl(C(a)\bigr)=C\bigl(f(a)\bigr),
 \end{equation}
-where the left-hand side is the \emph{matrix} function of $C(a)$. Evaluating a matrix function of the representation therefore returns the
+where the left-hand side is the \emph{matrix} function of
+$C(a)$~\cite{higham2008}. Evaluating a matrix function of the representation therefore returns the
 representation of the OTI result, and no OTI scalar type is required.
 
 At first order, seed the input as $t+\varepsilon$ with $\varepsilon^2=0$. The
@@ -461,6 +462,11 @@ Equation~\eqref{eq:cr-homomorphism},
  \Bigl[f(t),\ \frac{f'(t)}{1!},\ \frac{f''(t)}{2!},\ \dots,\
        \frac{f^{(p)}(t)}{p!}\Bigr]^{T}.
 \end{equation}
+The seed matrix $C(t+\varepsilon)=tI_{p+1}+N$ is the transpose of a Jordan
+block with eigenvalue $t$, so Equation~\eqref{eq:cr-column} is the standard
+expression for a matrix function of a Jordan block~\cite{higham2008}, and the
+factorial scaling of Equation~\eqref{eq:oti-extraction} is the scaling that
+appears there.
 These entries are Taylor coefficients, not derivatives. At first order the
 distinction is invisible because $1!=1$; at second order it is not. For
 $f=\exp$ at order two,
@@ -839,6 +845,9 @@ G. Lantoine, R. P. Russell, and T. Dargent (2012).
 J. Fike and J. Alonso (2011).
 The Development of Hyper-Dual Numbers for Exact Second-Derivative Calculations.
 \emph{49th AIAA Aerospace Sciences Meeting}, Orlando, Florida.
+\bibitem{higham2008}
+N. J. Higham (2008).
+\emph{Functions of Matrices: Theory and Computation}. SIAM.
 \bibitem{aristizabal2020}
 M. Aristizabal Cano (2020).
 \href{https://repository.eafit.edu.co/bitstreams/cc604c41-15b6-4a47-a076-0aec419e6391/download}{Order truncated imaginary algebra for computation of multivariable high-order derivatives in finite element analysis}.
