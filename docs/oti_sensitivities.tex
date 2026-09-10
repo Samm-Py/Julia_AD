@@ -91,13 +91,10 @@ For the centered formula in Equation~\eqref{eq:fd-introduction},
  D_c(h)=\frac{\exp((1+h)^2)-\exp((1-h)^2)}{2h}
        =2\mathrm e+\frac{10}{3}\mathrm e h^2+O(h^4).
 \end{equation}
-Thus the leading truncation error is $(10/3)\mathrm e h^2$. A simple illustrative
-scale for roundoff is $\epsilon_{\rm mach}\mathrm e/h$, where
-$\epsilon_{\rm mach}$ is the spacing from 1 to the next larger
-\texttt{Float64} number. Adding the two scales gives the familiar U-shaped
-error model. The roundoff scale is a heuristic, not a measured error or a
-rigorous bound: actual errors depend on rounding in the inputs, function
-evaluations, subtraction, and division.
+The truncation error $(10/3)\mathrm e h^2$ falls as $h$ is reduced, while
+cancellation in the numerator grows roughly as $\epsilon_{\rm mach}/h$, where
+$\epsilon_{\rm mach}$ is the spacing from 1 to the next larger \texttt{Float64}
+number. The competing trends give a U-shaped error curve.
 
 \begin{center}
 \includegraphics[width=0.95\linewidth]{../results/worked_example/fd_convergence.png}
@@ -108,12 +105,13 @@ stencil in 256-bit arithmetic. The roundoff scale and summed error model
 illustrate the competing trends; they are not bounds on the observed error.}
 \label{fig:fd-example-convergence}
 \end{center}
-At large $h$, truncation dominates and the error decreases approximately as
-$h^2$ when the step is reduced. At small $h$, cancellation and rounding dominate,
-producing an irregular increase in error. The smallest observed error lies
-between these regimes; its location depends on the function and arithmetic.
-Figure~\ref{fig:ctse-example-convergence} contrasts this behavior with CTSE for
-the same function and evaluation point.
+The smallest error lies between the two regimes, but its location depends on
+the function, the evaluation point, and the arithmetic, so no rule fixes it in
+advance. Choosing a step is therefore a tuning exercise, and that difficulty is
+the practical motivation for the alternatives that follow: CTSE removes the
+cancellation, and OTI arithmetic removes the step size altogether.
+Figure~\ref{fig:ctse-example-convergence} contrasts the CTSE behaviour for the
+same function and evaluation point.
 The figure and raw error data can be regenerated from the repository root:
 \begin{verbatim}
 julia --project=. docs/fd_worked_example.jl
