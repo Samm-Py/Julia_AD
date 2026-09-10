@@ -400,14 +400,20 @@ $C(a)=\sum_{j=0}^p a_jN^j$. At order two,
  N=\begin{bmatrix}0&0&0\\1&0&0\\0&1&0\end{bmatrix},\qquad
  C(a)=\begin{bmatrix}a_0&0&0\\a_1&a_0&0\\a_2&a_1&a_0\end{bmatrix}.
 \]
-Multiplying $C(a)$ by the coefficient vector $[b_0,b_1,b_2]^T$ produces the
-coefficients of $ab$. Consequently,
-\[
- C(a+b)=C(a)+C(b),\qquad C(ab)=C(a)C(b).
-\]
+Because $C(a)=\sum_j a_jN^j$ is a polynomial in the single matrix $N$, the
+algebra carries over directly. It is linear in the coefficients, so
+$C(a+b)=C(a)+C(b)$. For products, multiplying the two polynomials and
+collecting equal powers of $N$ gives
+\begin{equation}
+\label{eq:cr-product}
+ C(a)\,C(b)=\sum_{i=0}^{p}\sum_{j=0}^{p}a_ib_j\,N^{i+j}
+ =\sum_{k=0}^{p}\Bigl(\sum_{j=0}^{k}a_jb_{k-j}\Bigr)N^{k}=C(ab),
+\end{equation}
+where every term with $i+j>p$ drops out because $N^{p+1}=0$. The inner sum is
+the OTI multiplication rule of Section~\ref{sec:oti}, so multiplying the
+representations performs OTI multiplication.
 This is the generalized Cauchy--Riemann representation used
-here~\cite{aristizabal2020}: a real matrix
-implements OTI multiplication. Each object of Section~\ref{sec:oti} is replaced
+here~\cite{aristizabal2020}. Each object of Section~\ref{sec:oti} is replaced
 by a real matrix, and each OTI operation by the matching matrix operation:
 \begin{equation}
 \label{eq:cr-dictionary}
