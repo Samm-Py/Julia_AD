@@ -542,8 +542,8 @@ remains the same as in Section~\ref{sec:oti}.
 \label{sec:cr-matrices}
 Sections~\ref{sec:cr-univariate} and~\ref{sec:example-cr} applied functions to a
 single OTI number. The calculation in Section~\ref{sec:implementation} needs the
-exponential of a matrix, and seeding the duration makes that matrix one whose
-entries are OTI numbers.
+exponential of a matrix, whose argument becomes a matrix of OTI numbers once the
+duration is seeded.
 
 That case needs no new construction. Representing an OTI number already
 produces a matrix, so representing a matrix of OTI numbers produces a matrix of
@@ -555,25 +555,30 @@ $m\times m$ matrix,
  \in\mathbb R^{3m\times3m},
 \end{equation}
 where $M_j$ holds the order-$j$ coefficient of each entry of the $m\times m$
-matrix $M$, and each $0$ is the $m\times m$ zero block. The arrangement is
-unchanged: lower triangular, constant along diagonals, the order-$j$ coefficient
-on the $j$th subdiagonal. At truncation order $p$ the assembled matrix is
-$(p+1)m\times(p+1)m$, and at $m=1$ it is $C(a)$ again.
+matrix $M$, and each $0$ is the $m\times m$ zero block.
+
+For example, take $m=2$, $p=1$, and
+$M=\left[\begin{smallmatrix}a&b\\c&d\end{smallmatrix}\right]$ with
+$a=a_0+a_1\varepsilon$ and $b$, $c$, $d$ likewise. Then
+$M_0=\left[\begin{smallmatrix}a_0&b_0\\c_0&d_0\end{smallmatrix}\right]$,
+$M_1=\left[\begin{smallmatrix}a_1&b_1\\c_1&d_1\end{smallmatrix}\right]$, and
+\[
+ \mathcal C(M)=\begin{bmatrix}M_0&0\\M_1&M_0\end{bmatrix}
+ =\left[\begin{array}{cc|cc}
+   a_0&b_0&0&0\\
+   c_0&d_0&0&0\\\hline
+   a_1&b_1&a_0&b_0\\
+   c_1&d_1&c_0&d_0
+  \end{array}\right].
+\] At truncation order $p$ the
+assembled matrix is $(p+1)m\times(p+1)m$, and at $m=1$ it is $C(a)$ again.
 
 The dictionary of Equation~\eqref{eq:cr-dictionary} carries over, with products
-preserved in order since matrices need not commute, and so is any function given
-by a convergent series of sums and products, the matrix exponential included. A
-real exponential routine applied to Equation~\eqref{eq:matrix-cr} therefore
-returns the representation of the OTI result.
+preserved in order since matrices need not commute, and with it any function
+given by a convergent series, the matrix exponential included. A real
+exponential routine applied to Equation~\eqref{eq:matrix-cr} therefore returns
+the representation of the OTI result.
 
-One case is worth naming, because Section~\ref{sec:oti-thermal} is built on it.
-When a single OTI number multiplies a constant real matrix, $M=aH$, the blocks
-are $M_j=a_jH$ and the assembly factors as a Kronecker product,
-\begin{equation}
-\label{eq:matrix-cr-kron}
- \mathcal C(aH)=C(a)\otimes H,
-\end{equation}
-which substitutes $H$ for each scalar entry of $C(a)$.
 
 \clearpage
 \section{Implementation}
