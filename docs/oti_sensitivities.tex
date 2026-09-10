@@ -143,7 +143,10 @@ Operations such as absolute values, conjugation, or premature removal of
 imaginary components can invalidate the method. Standard CTSE provides the
 first derivative in Equation~\eqref{eq:ctse-derivative}; one evaluation does not
 separate the higher derivatives also present in its Taylor expansion. Other
-complex-step extensions exist, but are outside the scope of this comparison.
+complex-step extensions exist, including multicomplex numbers for high-order
+derivatives and hyper-dual numbers for exact second
+derivatives~\cite{multi_complex,multi-dual}, but are outside the scope of this
+comparison.
 \subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)} by complex step}
 \label{sec:example-ctse}
 Consider the composition $v=t^2$, $f=\exp(v)$ at $t_0=1$.
@@ -241,7 +244,7 @@ For one variable and truncation order $p$, consider two order-truncated imaginar
 The symbol $\varepsilon$ is \emph{nilpotent}: sufficiently high powers vanish.
 At $p=1$, Equation~\eqref{eq:oti-factors} reduces to the \emph{dual numbers}
 $a_0+a_1\varepsilon$ with $\varepsilon^2=0$, which carry a value and one
-derivative through a forward-mode evaluation. OTI numbers extend that same
+derivative through a forward-mode evaluation~\cite{multi-dual}. OTI numbers extend that same
 construction to order $p$, carrying $p$ derivatives at once.
 
 The prescribed square is also what separates this from Section~\ref{sec:ctse}.
@@ -275,7 +278,7 @@ $b=b_0+b_1\varepsilon+b_2\varepsilon^2$ give
  ab=a_0b_0+(a_0b_1+a_1b_0)\varepsilon
  +(a_0b_2+a_1b_1+a_2b_0)\varepsilon^2.
 \]
-An OTI scalar type can support \emph{operator overloading}: operations such as
+An OTI scalar type can support \emph{operator overloading}~\cite{phipps2012efficient}: operations such as
 addition and multiplication are defined to combine coefficients according
 to these rules. Elementary functions such as $\exp$ and $\sin$ can likewise be
 overloaded using their Taylor expansions. For
@@ -408,7 +411,8 @@ coefficients of $ab$. Consequently,
 \[
  C(a+b)=C(a)+C(b),\qquad C(ab)=C(a)C(b).
 \]
-This is the generalized Cauchy--Riemann representation used here: a real matrix
+This is the generalized Cauchy--Riemann representation used
+here~\cite{aristizabal2020}: a real matrix
 implements OTI multiplication. The convention adopted here uses lower triangular matrices
 and coefficients ordered by increasing degree. An upper triangular convention
 would require corresponding changes in extraction.
@@ -803,7 +807,7 @@ epsilon only for logarithmic display; the CSV files retain the raw errors.
 \clearpage
 \begingroup
 \small
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 \bibitem{ADinML}
 A. G. Baydin, B. A. Pearlmutter, A. A. Radul, and J. M. Siskind (2018).
 \href{https://jmlr.org/papers/v18/17-468.html}{Automatic Differentiation in Machine Learning: a Survey}.
@@ -816,11 +820,23 @@ Springer.
 A. Griewank and A. Walther (2008).
 \href{https://epubs.siam.org/doi/book/10.1137/1.9780898717761}{Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation}.
 Second edition, SIAM.
+\bibitem{phipps2012efficient}
+E. Phipps and R. Pawlowski (2012).
+Efficient Expression Templates for Operator Overloading-Based Automatic Differentiation.
+In \emph{Recent Advances in Algorithmic Differentiation}, Springer, 309--319.
 \bibitem{martins-guide}
 MDO Lab. \href{https://mdolab.engin.umich.edu/wiki/guide-complex-step-derivative-approximation}{A Guide to the Complex-Step Derivative Approximation}.
 \bibitem{martins2003}
 J. R. R. A. Martins, P. Sturdza, and J. J. Alonso (2003).
 \href{https://mdolab.engin.umich.edu/bibliography/Martins2003a}{The Complex-Step Derivative Approximation}.
+\bibitem{multi_complex}
+G. Lantoine, R. P. Russell, and T. Dargent (2012).
+\href{https://doi.org/10.1145/2168773.2168774}{Using Multicomplex Variables for Automatic Computation of High-Order Derivatives}.
+\emph{ACM Transactions on Mathematical Software}, 38(3), article 16.
+\bibitem{multi-dual}
+J. Fike and J. Alonso (2011).
+The Development of Hyper-Dual Numbers for Exact Second-Derivative Calculations.
+\emph{49th AIAA Aerospace Sciences Meeting}, Orlando, Florida.
 \bibitem{aristizabal2020}
 M. Aristizabal Cano (2020).
 \href{https://repository.eafit.edu.co/bitstreams/cc604c41-15b6-4a47-a076-0aec419e6391/download}{Order truncated imaginary algebra for computation of multivariable high-order derivatives in finite element analysis}.
