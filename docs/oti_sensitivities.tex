@@ -407,7 +407,23 @@ coefficients of $ab$. Consequently,
 \]
 This is the generalized Cauchy--Riemann representation used
 here~\cite{aristizabal2020}: a real matrix
-implements OTI multiplication. The convention adopted here uses lower triangular matrices
+implements OTI multiplication. Each object of Section~\ref{sec:oti} is replaced
+by a real matrix, and each OTI operation by the matching matrix operation:
+\begin{equation}
+\label{eq:cr-dictionary}
+\begin{array}{r@{\;}c@{\;}l@{\qquad\qquad}r@{\;}c@{\;}l}
+ 1 &\longmapsto& I_{p+1},
+ & a &\longmapsto& C(a),\\[3pt]
+ \varepsilon &\longmapsto& N,
+ & a+b &\longmapsto& C(a)+C(b),\\[3pt]
+ \varepsilon^{p+1}=0 &\longmapsto& N^{p+1}=0,
+ & ab &\longmapsto& C(a)\,C(b).
+\end{array}
+\end{equation}
+The seed $t+\varepsilon$ of Section~\ref{sec:oti} therefore becomes
+$C(t+\varepsilon)=tI_{p+1}+N$, and extracting the coefficient of
+$\varepsilon^k$ becomes reading entry $k+1$ of the first column.
+The convention adopted here uses lower triangular matrices
 and coefficients ordered by increasing degree. An upper triangular convention
 would require corresponding changes in extraction.
 
