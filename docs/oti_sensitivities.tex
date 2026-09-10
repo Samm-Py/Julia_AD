@@ -17,7 +17,9 @@
 \maketitle
 \vspace{-2em}
 \setcounter{tocdepth}{3}
+\begingroup\hypersetup{linkcolor=black}
 \tableofcontents
+\endgroup
 \bigskip
 \section{Background}
 \label{sec:background}
@@ -141,7 +143,7 @@ imaginary components can invalidate the method. Standard CTSE provides the
 first derivative in Equation~\eqref{eq:ctse-derivative}; one evaluation does not
 separate the higher derivatives also present in its Taylor expansion. Other
 complex-step extensions exist, but are outside the scope of this comparison.
-\subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)}}
+\subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)} by complex step}
 \label{sec:example-ctse}
 Consider the composition $v=t^2$, $f=\exp(v)$ at $t_0=1$.
 Sections~\ref{sec:example-oti} and~\ref{sec:example-cr} evaluate this same function
@@ -325,7 +327,7 @@ so the second derivative is $2!\times1=2$.
 Truncation does not approximate the retained Taylor coefficients in exact
 arithmetic; numerical computations still incur floating-point error.
 
-\subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)}}
+\subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)} in OTI arithmetic}
 \label{sec:example-oti}
 Use the function and evaluation point of Section~\ref{sec:example-ctse}, now
 with truncation order $p=2$. Seed $\widehat t=1+\varepsilon$ and impose $\varepsilon^3=0$. The square is obtained by
@@ -483,7 +485,7 @@ the matrix chosen to carry the seed.
 
 
 \newpage
-\subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)}}
+\subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)} in the CR representation}
 \label{sec:example-cr}
 Represent the order-two seed $\widehat t=1+\varepsilon$ from
 Section~\ref{sec:example-oti} by the ordinary real matrix
