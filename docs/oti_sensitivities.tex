@@ -66,8 +66,8 @@ propagates sensitivities from outputs back to inputs~\cite{eval_deriv_ad}.
 
 \subsection{Finite differences and their limitations}
 \label{sec:fd-introduction}
-Finite differences (FD) instead approximate derivatives using function values at
-nearby real inputs. For a sufficiently smooth function $F$ and a real step $h$,
+Where AD propagates derivatives through the evaluation trace, finite
+differences (FD) approximate them from function values at nearby real inputs. For a sufficiently smooth function $F$ and a real step $h$,
 \begin{equation}
 \label{eq:fd-introduction}
  F'(t)\approx\frac{F(t+h)-F(t)}{h},\qquad
