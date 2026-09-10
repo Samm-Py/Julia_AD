@@ -446,8 +446,18 @@ matrix exponential terminates after two terms:
 \]
 Its first column is $[\mathrm e^{t},\mathrm e^{t}]^{T}$, which is
 $[f(t),f'(t)]$. Because $\exp$ is its own derivative, this example on its own
-cannot separate the method from a coincidence; taking $f=\sin$ instead gives
-the first column $[\sin t,\cos t]^{T}$.
+cannot separate the method from a coincidence.
+
+Take $f=\sin$ instead. The series for a nilpotent argument again terminate at
+once, giving $\sin N=N$ and $\cos N=I_2$, and since $tI_2$ and $N$ commute the
+angle-addition formula applies:
+\[
+ \sin(tI_2+N)=\sin(tI_2)\cos N+\cos(tI_2)\sin N
+ =\sin(t)\,I_2+\cos(t)\,N
+ =\begin{bmatrix}\sin t&0\\ \cos t&\sin t\end{bmatrix}.
+\]
+Its first column is $[\sin t,\cos t]^{T}$, again $[f(t),f'(t)]$, now with the
+value and the derivative distinct.
 
 The first column carries the answer because $C(a)$ is lower triangular with
 constant diagonals: its first column is precisely the coefficients
