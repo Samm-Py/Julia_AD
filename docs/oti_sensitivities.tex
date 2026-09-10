@@ -311,12 +311,7 @@ coefficient of $\varepsilon^k$. Equation~\eqref{eq:oti-taylor} therefore yields 
  \boxed{F^{(k)}(t)=k!\,\operatorname{Im}_{\varepsilon^k}
        \bigl(F(t+\varepsilon)\bigr)},\qquad 1\leq k\leq p.
 \end{equation}
-The constant coefficient is $F(t)$. The unit seed in $t+\varepsilon$ fixes the
-scaling in Equation~\eqref{eq:oti-extraction}; no numerical perturbation step is
-required. For example, $(t+\varepsilon)^2=t^2+2t\varepsilon+\varepsilon^2$,
-so the second derivative is $2!\times1=2$.
-Truncation does not approximate the retained Taylor coefficients in exact
-arithmetic; numerical computations still incur floating-point error.
+The constant coefficient is $F(t)$.
 
 \subsubsection{Worked example: \texorpdfstring{$f(t)=\exp(t^2)$}{f(t) = exp(t squared)} in OTI arithmetic}
 \label{sec:example-oti}
