@@ -44,11 +44,13 @@ functions with known derivatives, forming an \emph{evaluation trace}. This trace
 can be represented as a computational graph: nodes describe operations and
 intermediate values, while directed edges describe their dependencies. Applying
 the chain rule along these dependencies produces derivatives of the complete
-calculation~\cite{eval_deriv_ad}. For example, the evaluation of $f(t)=\sin(t^2)$
-can be written as $v_1=t^2$ followed by $v_2=\sin(v_1)$. Propagating derivatives gives
+calculation~\cite{eval_deriv_ad}. For example, the evaluation of $f(t)=\exp(t^2)$,
+used again in Sections~\ref{sec:example-ctse}, \ref{sec:example-oti},
+and~\ref{sec:example-cr}, can be written as $v_1=t^2$ followed by
+$v_2=\exp(v_1)$. Propagating derivatives gives
 \[
  \frac{dv_1}{dt}=2t,\qquad
- \frac{dv_2}{dt}=\cos(v_1)\frac{dv_1}{dt}=2t\cos(t^2).
+ \frac{dv_2}{dt}=\exp(v_1)\frac{dv_1}{dt}=2t\exp(t^2).
 \]
 The derivative is evaluated numerically without constructing a global symbolic
 expression or approximating a limit with a finite perturbation. For a
