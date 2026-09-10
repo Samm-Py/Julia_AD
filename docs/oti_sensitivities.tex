@@ -540,32 +540,47 @@ remains the same as in Section~\ref{sec:oti}.
 
 \subsubsection{Matrices of OTI numbers}
 \label{sec:cr-matrices}
-For a square matrix whose entries are OTI numbers, collect the coefficients
-of equal degree into ordinary real matrices:
+Sections~\ref{sec:cr-univariate} and~\ref{sec:example-cr} applied functions to a
+single OTI number. The calculation in Section~\ref{sec:implementation} needs the
+exponential of a matrix, and seeding the duration makes that matrix one whose
+entries are OTI numbers. The representation extends without changing form.
+
+Let $M$ be $m\times m$ with OTI entries, and collect the coefficients of equal
+degree into ordinary real matrices:
 \begin{equation}
 \label{eq:matrix-coefficients}
  M=M_0+M_1\varepsilon+M_2\varepsilon^2,
  \qquad M_j\in\mathbb R^{m\times m}.
 \end{equation}
-Specifically, if entry $(r,s)$ is
-$M_{rs}=m_{rs,0}+m_{rs,1}\varepsilon+m_{rs,2}\varepsilon^2$, then
-$(M_j)_{rs}=m_{rs,j}$. Thus $M_j$ contains the order-$j$ coefficient of every
-entry of $M$; its entries are real scalars, not OTI numbers.
-The corresponding representation is a \emph{block matrix of coefficient matrices}:
+If entry $(r,s)$ of $M$ is
+$m_{rs,0}+m_{rs,1}\varepsilon+m_{rs,2}\varepsilon^2$, then
+$(M_j)_{rs}=m_{rs,j}$: the real matrix $M_j$ gathers the order-$j$ coefficient
+of every entry. The representation is then
 \begin{equation}
 \label{eq:matrix-cr}
  \mathcal C(M)=\begin{bmatrix}M_0&0&0\\M_1&M_0&0\\M_2&M_1&M_0\end{bmatrix}
  \in\mathbb R^{3m\times3m}.
 \end{equation}
-Every displayed block in Equation~\eqref{eq:matrix-cr}, including each zero block,
-has size $m\times m$. The complete block array is an ordinary real
-$3m\times3m$ matrix, suitable for real matrix operations. At truncation order $p$, the assembled matrix has size
-$(p+1)m\times(p+1)m$.
+This is the pattern of $C(a)$ with its entries promoted: lower triangular,
+constant along diagonals, the order-$j$ coefficient on the $j$th subdiagonal.
+Each position now holds an $m\times m$ block, zero blocks included, and at
+truncation order $p$ the assembled matrix is $(p+1)m\times(p+1)m$.
 
-It preserves matrix products, including their order. Because the exponential is
-defined by a convergent series of sums and products, it also preserves the
-matrix exponential. This lets a real-valued numerical routine evaluate the
-OTI exponential without requiring a custom scalar type.
+The dictionary of Equation~\eqref{eq:cr-dictionary} carries over, with products
+preserved in order since matrices need not commute, and so is any function given
+by a convergent series of sums and products, the matrix exponential included. A
+real exponential routine applied to Equation~\eqref{eq:matrix-cr} therefore
+returns the representation of the OTI result.
+
+One case is worth naming, because Section~\ref{sec:oti-thermal} is built on it.
+When a single OTI number multiplies a constant real matrix, $M=aH$, the
+coefficient matrices are $M_j=a_jH$ and the assembly factors as a Kronecker
+product,
+\begin{equation}
+\label{eq:matrix-cr-kron}
+ \mathcal C(aH)=C(a)\otimes H,
+\end{equation}
+which replaces each scalar entry of $C(a)$ by that scalar times $H$.
 
 \clearpage
 \section{Implementation}
