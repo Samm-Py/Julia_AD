@@ -543,28 +543,22 @@ remains the same as in Section~\ref{sec:oti}.
 Sections~\ref{sec:cr-univariate} and~\ref{sec:example-cr} applied functions to a
 single OTI number. The calculation in Section~\ref{sec:implementation} needs the
 exponential of a matrix, and seeding the duration makes that matrix one whose
-entries are OTI numbers. The representation extends without changing form.
+entries are OTI numbers.
 
-Let $M$ be $m\times m$ with OTI entries, and collect the coefficients of equal
-degree into ordinary real matrices:
-\begin{equation}
-\label{eq:matrix-coefficients}
- M=M_0+M_1\varepsilon+M_2\varepsilon^2,
- \qquad M_j\in\mathbb R^{m\times m}.
-\end{equation}
-If entry $(r,s)$ of $M$ is
-$m_{rs,0}+m_{rs,1}\varepsilon+m_{rs,2}\varepsilon^2$, then
-$(M_j)_{rs}=m_{rs,j}$: the real matrix $M_j$ gathers the order-$j$ coefficient
-of every entry. The representation is then
+That case needs no new construction. Representing an OTI number already
+produces a matrix, so representing a matrix of OTI numbers produces a matrix of
+matrices: the pattern of $C(a)$ with every real scalar promoted to a real
+$m\times m$ matrix,
 \begin{equation}
 \label{eq:matrix-cr}
  \mathcal C(M)=\begin{bmatrix}M_0&0&0\\M_1&M_0&0\\M_2&M_1&M_0\end{bmatrix}
- \in\mathbb R^{3m\times3m}.
+ \in\mathbb R^{3m\times3m},
 \end{equation}
-This is the pattern of $C(a)$ with its entries promoted: lower triangular,
-constant along diagonals, the order-$j$ coefficient on the $j$th subdiagonal.
-Each position now holds an $m\times m$ block, zero blocks included, and at
-truncation order $p$ the assembled matrix is $(p+1)m\times(p+1)m$.
+where $M_j$ holds the order-$j$ coefficient of each entry of the $m\times m$
+matrix $M$, and each $0$ is the $m\times m$ zero block. The arrangement is
+unchanged: lower triangular, constant along diagonals, the order-$j$ coefficient
+on the $j$th subdiagonal. At truncation order $p$ the assembled matrix is
+$(p+1)m\times(p+1)m$, and at $m=1$ it is $C(a)$ again.
 
 The dictionary of Equation~\eqref{eq:cr-dictionary} carries over, with products
 preserved in order since matrices need not commute, and so is any function given
@@ -573,14 +567,13 @@ real exponential routine applied to Equation~\eqref{eq:matrix-cr} therefore
 returns the representation of the OTI result.
 
 One case is worth naming, because Section~\ref{sec:oti-thermal} is built on it.
-When a single OTI number multiplies a constant real matrix, $M=aH$, the
-coefficient matrices are $M_j=a_jH$ and the assembly factors as a Kronecker
-product,
+When a single OTI number multiplies a constant real matrix, $M=aH$, the blocks
+are $M_j=a_jH$ and the assembly factors as a Kronecker product,
 \begin{equation}
 \label{eq:matrix-cr-kron}
  \mathcal C(aH)=C(a)\otimes H,
 \end{equation}
-which replaces each scalar entry of $C(a)$ by that scalar times $H$.
+which substitutes $H$ for each scalar entry of $C(a)$.
 
 \clearpage
 \section{Implementation}
