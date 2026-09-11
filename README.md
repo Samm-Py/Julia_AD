@@ -67,3 +67,8 @@ truncation-versus-roundoff plot. Regenerate it with
 `julia --project=. docs/fd_worked_example.jl`; the figure and CSV are in
 `results/worked_example/`. The roundoff curve is an illustrative scale,
 while observed and truncation errors use a 256-bit reference.
+
+Appendix A describes multivariate OTI arithmetic with total-degree truncation,
+commuting multiplication matrices, and extraction of mixed derivatives. Run
+`julia --project=. docs/verify_multivariate_example.jl` to verify its examples.
+The production thermal entry points remain single-parameter methods.
