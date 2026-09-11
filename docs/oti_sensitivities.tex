@@ -247,14 +247,17 @@ $a_0+a_1\varepsilon$ with $\varepsilon^2=0$, which carry a value and one
 derivative through a forward-mode evaluation~\cite{multi-dual}. OTI numbers extend that same
 construction to order $p$, carrying $p$ derivatives at once.
 
-The prescribed square is also what separates this from Section~\ref{sec:ctse}.
+The defining algebraic relation also distinguishes OTI arithmetic from the
+CTSE method in Section~\ref{sec:ctse}.
 Under the complex step, $i^2=-1$ folds the third-order Taylor term back into the
 imaginary part, which is the origin of the $O(h^2)$ truncation error in
-Equation~\eqref{eq:ctse-derivative}. Nilpotency annihilates that term instead,
-so the retained coefficients are exact in the algebra rather than approximations
-improved by shrinking a step. The name retains \emph{imaginary} because the
-construction parallels $\mathbb C$, adjoining to the reals a new unit with a
-prescribed square, and because extracting a coefficient plays the role of taking
+Equation~\eqref{eq:ctse-derivative}. In OTI arithmetic, powers above order $p$
+vanish, while retained powers remain distinct rather than contributing to a
+lower-order coefficient. The retained coefficients are therefore exact in the
+algebra rather than approximations improved by shrinking a step. The name
+retains \emph{imaginary} because the construction parallels $\mathbb C$ by
+adjoining a new unit to the reals, but imposes the nilpotency relation
+$\varepsilon^{p+1}=0$, and because extracting a coefficient plays the role of taking
 an imaginary part, as the notation $\operatorname{Im}_{\varepsilon^k}$ in
 Equation~\eqref{eq:oti-extraction} reflects.
 
@@ -393,16 +396,72 @@ Section~\ref{sec:example-cr} performs this same calculation using real matrices.
 
 \subsection{Cauchy--Riemann matrix representation}
 \label{sec:cr}
-Let $N$ be the $(p+1)\times(p+1)$ matrix with ones immediately below the diagonal
-and zeros elsewhere. Since $N^{p+1}=0$, the OTI number defined in Section~\ref{sec:oti} has the representation
-$C(a)=\sum_{j=0}^p a_jN^j$. At order two,
+The univariate OTI algebra of Section~\ref{sec:oti} has one generator,
+$\varepsilon$, and truncation order $p$. Its basis is
+$(1,\varepsilon,\ldots,\varepsilon^p)$, with
+$\varepsilon^{p+1}=0$. To represent this algebra using real matrices, we
+first construct a matrix $N$ representing multiplication by $\varepsilon$.
+Higher powers of $\varepsilon$ are then represented by powers of $N$, and
+a general OTI number is represented by the same linear combination of these
+matrices. This is the generalized Cauchy--Riemann representation used
+here~\cite{aristizabal2020}.
+
+\paragraph{Construct the generator matrix from its action on the basis.}
+At order two, multiplying each monomial in the ordered basis by
+$\varepsilon$ gives
+\begin{equation}
+ \label{eq:cr-basis-action}
+ \varepsilon(1,\varepsilon,\varepsilon^2)
+ =(\varepsilon,\varepsilon^2,0).
+\end{equation}
+For each output, write its coordinates in the order
+$(1,\varepsilon,\varepsilon^2)$ and place that vector in the corresponding
+column of $N$. The first output, $\varepsilon$, gives the first column
+$(0,1,0)^T$; the second output, $\varepsilon^2$, gives $(0,0,1)^T$; the last
+output is zero. Thus
 \[
  N=\begin{bmatrix}0&0&0\\1&0&0\\0&1&0\end{bmatrix},\qquad
- C(a)=\begin{bmatrix}a_0&0&0\\a_1&a_0&0\\a_2&a_1&a_0\end{bmatrix}.
+ N^2=\begin{bmatrix}0&0&0\\0&0&0\\1&0&0\end{bmatrix},\qquad N^3=0.
 \]
-This is the generalized Cauchy--Riemann representation used
-here~\cite{aristizabal2020}. Each object of Section~\ref{sec:oti} is replaced
-by a real matrix, and each OTI operation by the matching matrix operation:
+The product $N^2$ represents multiplication by $\varepsilon^2$.
+At general order $p$, the same construction gives a $(p+1)\times(p+1)$
+matrix with ones immediately below the diagonal and zeros elsewhere.
+Multiplication shifts each monomial to the next power, until the result
+vanishes at degree $p+1$; consequently $N^{p+1}=0$.
+
+\paragraph{Build the representation of a general number.}
+For $a=\sum_{j=0}^{p}a_j\varepsilon^j$, replace $1$ by $I_{p+1}$ and each
+$\varepsilon^j$ by $N^j$, keeping the real coefficients:
+\begin{equation}
+ \label{eq:cr-generator-representation}
+ \boxed{\begin{aligned}
+ a=\sum_{j=0}^{p}a_j\varepsilon^j
+ &\ \longmapsto\ C(a)=\sum_{j=0}^{p}a_jN^j\\
+ &\hphantom{\ \longmapsto\ C(a)}=a_0I_{p+1}+a_1N+\cdots+a_pN^p
+ \end{aligned}}
+\end{equation}
+Here $N^0=I_{p+1}$. In particular, at order two,
+\begin{equation}
+ \label{eq:cr-order-two-representation}
+ \begin{aligned}
+ a=a_0+a_1\varepsilon+a_2\varepsilon^2
+ &\ \longmapsto\ C(a)=a_0I_3+a_1N+a_2N^2\\
+ &\hphantom{\ \longmapsto\ C(a)}=
+ \begin{bmatrix}a_0&0&0\\a_1&a_0&0\\a_2&a_1&a_0\end{bmatrix}.
+ \end{aligned}
+\end{equation}
+There is one generator matrix $N$, while $I_{p+1},N,\ldots,N^p$ form a basis
+for the represented algebra. Appendix~\ref{sec:multi-matrices} extends this
+construction to several independent generators.
+
+\paragraph{Carry out OTI arithmetic using matrix operations.}
+To use this representation in a calculation, addition and multiplication
+must reproduce the OTI rules of Section~\ref{sec:oti}. Addition combines
+the coefficients of equal powers of $N$. Multiplication uses
+$N^iN^j=N^{i+j}$, with powers above $p$ equal to zero, exactly as for
+$\varepsilon$. Consequently, for any two OTI numbers $a$ and $b$,
+$C(a+b)=C(a)+C(b)$ and $C(ab)=C(a)C(b)$.
+The resulting correspondence is
 \begin{equation}
 \label{eq:cr-dictionary}
 \begin{array}{r@{\;}c@{\;}l@{\qquad\qquad}r@{\;}c@{\;}l}
@@ -415,8 +474,12 @@ by a real matrix, and each OTI operation by the matching matrix operation:
 \end{array}
 \end{equation}
 The seed $t+\varepsilon$ of Section~\ref{sec:oti} therefore becomes
-$C(t+\varepsilon)=tI_{p+1}+N$, and extracting the coefficient of
-$\varepsilon^k$ becomes reading entry $k+1$ of the first column.
+$C(t+\varepsilon)=tI_{p+1}+N$. To recover the OTI result after a matrix
+calculation, read its coefficients from the first column, as illustrated
+in Equation~\eqref{eq:cr-order-two-representation}: the coefficient of
+$\varepsilon^k$ occupies entry $k+1$. For a seeded function evaluation,
+these coefficients give derivatives through the factorial scaling in
+Equation~\eqref{eq:oti-extraction}.
 The convention adopted here uses lower triangular matrices
 and coefficients ordered by increasing degree. An upper triangular convention
 would require corresponding changes in extraction.
@@ -438,22 +501,22 @@ real number $t$ contributes $tI_2$ and the seed contributes $N$, so
 \[
  C(t+\varepsilon)=tI_2+N=\begin{bmatrix}t&0\\1&t\end{bmatrix}.
 \]
-Take $f=\exp$. The two terms commute and $N^2=0$, so the series defining the
-matrix exponential terminates after two terms:
+Take $f=\exp$. By Equation~\eqref{eq:oti-taylor} at $p=1$, the OTI result is
+$\exp(t+\varepsilon)=\mathrm e^{t}+\mathrm e^{t}\varepsilon$, so
+Equation~\eqref{eq:cr-homomorphism} returns its representation directly:
 \[
- \exp(tI_2+N)=\mathrm e^{t}(I_2+N)
+ \exp(tI_2+N)=\mathrm e^{t}I_2+\mathrm e^{t}N
  =\begin{bmatrix}\mathrm e^{t}&0\\ \mathrm e^{t}&\mathrm e^{t}\end{bmatrix}.
 \]
 Its first column is $[\mathrm e^{t},\mathrm e^{t}]^{T}$, which is
 $[f(t),f'(t)]$. Because $\exp$ is its own derivative, this example on its own
 cannot separate the method from a coincidence.
 
-Take $f=\sin$ instead. The series for a nilpotent argument again terminate at
-once, giving $\sin N=N$ and $\cos N=I_2$, and since $tI_2$ and $N$ commute the
-angle-addition formula applies:
+Take $f=\sin$ instead. Now
+$\sin(t+\varepsilon)=\sin t+\cos(t)\,\varepsilon$, and the same substitution
+gives
 \[
- \sin(tI_2+N)=\sin(tI_2)\cos N+\cos(tI_2)\sin N
- =\sin(t)\,I_2+\cos(t)\,N
+ \sin(tI_2+N)=\sin(t)\,I_2+\cos(t)\,N
  =\begin{bmatrix}\sin t&0\\ \cos t&\sin t\end{bmatrix}.
 \]
 Its first column is $[\sin t,\cos t]^{T}$, again $[f(t),f'(t)]$, now with the
@@ -494,9 +557,8 @@ whose first column is $[\mathrm e^{t},\mathrm e^{t},\mathrm e^{t}/2]^{T}$. The
 second derivative follows from the factorial scaling of
 Equation~\eqref{eq:oti-extraction}, as $2!\,(\mathrm e^{t}/2)=\mathrm e^{t}$.
 
-Nothing here is truncated by hand. The power series of $f$ terminates on its
-own because $N^{p+1}=0$, and the truncation order is fixed once, by the size of
-the matrix chosen to carry the seed.
+The Taylor expansion about $tI_{p+1}$ terminates because $N^{p+1}=0$.
+The truncation order is fixed by the size of the matrix representing the seed.
 
 
 
@@ -545,10 +607,15 @@ single OTI number. The calculation in Section~\ref{sec:implementation} needs the
 exponential of a matrix, whose argument becomes a matrix of OTI numbers once the
 duration is seeded.
 
-That case needs no new construction. Representing an OTI number already
-produces a matrix, so representing a matrix of OTI numbers produces a matrix of
-matrices: the pattern of $C(a)$ with every real scalar promoted to a real
-$m\times m$ matrix,
+The same generator matrix $N$ also gives this representation.
+First collect the coefficients at each order into real matrices:
+\[
+ M=M_0+M_1\varepsilon+\cdots+M_p\varepsilon^p,
+ \qquad M_j\in\mathbb R^{m\times m}.
+\]
+The scalar construction in Equation~\eqref{eq:cr-generator-representation}
+now becomes a block construction: each scalar coefficient $a_j$ is replaced
+by its coefficient matrix $M_j$. At order two, this gives
 \begin{equation}
 \label{eq:matrix-cr}
  \mathcal C(M)=\begin{bmatrix}M_0&0&0\\M_1&M_0&0\\M_2&M_1&M_0\end{bmatrix}
@@ -573,6 +640,34 @@ $M_1=\left[\begin{smallmatrix}a_1&b_1\\c_1&d_1\end{smallmatrix}\right]$, and
 \] At truncation order $p$ the
 assembled matrix is $(p+1)m\times(p+1)m$, and at $m=1$ it is $C(a)$ again.
 
+The same block construction can be written using the \emph{Kronecker product},
+denoted by $\otimes$. This product replaces each scalar entry of its first
+matrix by that scalar times the entire second matrix. For example,
+\[
+ \begin{bmatrix}u_{11}&u_{12}\\u_{21}&u_{22}\end{bmatrix}\otimes B
+ =\begin{bmatrix}u_{11}B&u_{12}B\\u_{21}B&u_{22}B\end{bmatrix}.
+\]
+Using the generator matrix $N$ constructed in Section~\ref{sec:cr}, the
+representation at arbitrary order $p$ is
+\begin{equation}
+\label{eq:matrix-cr-kronecker}
+ \boxed{\mathcal C(M)=\sum_{j=0}^{p}N^j\otimes M_j},\qquad
+ N^0=I_{p+1}.
+\end{equation}
+Here $N$ acts on the order of the coefficients, while each $M_j$ acts on the
+original matrix dimension. The identity places $M_0$ in every diagonal block;
+$N$ places $M_1$ on the first block subdiagonal; $N^2$ places $M_2$ on the
+second block subdiagonal, and so on. Thus, at order two,
+\[
+ \mathcal C(M)=I_3\otimes M_0+N\otimes M_1+N^2\otimes M_2
+ =\begin{bmatrix}M_0&0&0\\M_1&M_0&0\\M_2&M_1&M_0\end{bmatrix},
+\]
+which is exactly Equation~\eqref{eq:matrix-cr}. At first order this reduces to
+$\mathcal C(M)=I_2\otimes M_0+N\otimes M_1$.
+Section~\ref{sec:example-cr-matrix} applies this expression with $M_0=tH$
+and $M_1=H$. Appendix~\ref{sec:multivariate} extends the construction to
+multiple parameters and mixed derivatives.
+
 The dictionary of Equation~\eqref{eq:cr-dictionary} carries over, with products
 preserved in order since matrices need not commute, and with it any function
 given by a convergent series, the matrix exponential included. A real
@@ -587,10 +682,34 @@ Take the constant real matrix and matrix-valued function
  H=\begin{bmatrix}0&1\\-1&0\end{bmatrix},\qquad
  F(t)=\exp(tH)=\begin{bmatrix}\cos t&\sin t\\-\sin t&\cos t\end{bmatrix},
 \]
-and seed the parameter as $t+\varepsilon$ at order one. The argument
-$M=(t+\varepsilon)H$ has blocks $M_0=tH$ and $M_1=H$, so
+and use the first-order real seed representation from
+Section~\ref{sec:cr-univariate}:
+\begin{equation}
+\label{eq:matrix-example-seeded}
+ T=tI_2+N=\begin{bmatrix}t&0\\1&t\end{bmatrix},\qquad
+ N=\begin{bmatrix}0&0\\1&0\end{bmatrix},\qquad N^2=0.
+\end{equation}
+The seed matrix $T$ carries the value and first-order information, while $H$
+acts on the two components of the original matrix problem. Applying the
+Kronecker representation in Equation~\eqref{eq:matrix-cr-kronecker}, with
+$M_0=tH$ and $M_1=H$, gives
+\begin{equation}
+\label{eq:matrix-example-lifted}
+ \mathcal M=T\otimes H
+ =(tI_2+N)\otimes H
+ =I_2\otimes(tH)+N\otimes H.
+\end{equation}
+The two terms in Equation~\eqref{eq:matrix-example-lifted} produce the blocks
+explicitly:
 \[
- \mathcal C(M)=\begin{bmatrix}tH&0\\H&tH\end{bmatrix}
+ I_2\otimes(tH)=\begin{bmatrix}tH&0_{2\times2}\\0_{2\times2}&tH\end{bmatrix},
+ \qquad
+ N\otimes H=\begin{bmatrix}0_{2\times2}&0_{2\times2}\\H&0_{2\times2}\end{bmatrix}.
+\]
+Adding them places $tH$ in both diagonal blocks and $H$ in the lower-left
+block, recovering the pattern of Section~\ref{sec:cr-matrices}:
+\[
+ \mathcal M=\begin{bmatrix}tH&0_{2\times2}\\H&tH\end{bmatrix}
  =\left[\begin{array}{cc|cc}
    0&t&0&0\\
    -t&0&0&0\\\hline
@@ -598,9 +717,12 @@ $M=(t+\varepsilon)H$ has blocks $M_0=tH$ and $M_1=H$, so
    -1&0&-t&0
   \end{array}\right].
 \]
-Exponentiating this ordinary real $4\times4$ matrix gives
+Thus the same nilpotent matrix $N$ used in Section~\ref{sec:cr-univariate}
+now acts at the block level as $N\otimes H$. Its square is zero because
+$(N\otimes H)^2=N^2\otimes H^2=0$. Exponentiating the
+ordinary real $4\times4$ matrix gives
 \[
- \exp\bigl(\mathcal C(M)\bigr)
+ \exp(\mathcal M)
  =\begin{bmatrix}\exp(tH)&0\\ H\exp(tH)&\exp(tH)\end{bmatrix},
 \]
 whose first block column holds
@@ -874,6 +996,11 @@ and large steps. CTSE maintains first-derivative accuracy for very small imagina
 steps in this example. OTI--CR has no step parameter and provides a horizontal
 error reference. Errors in Figure~\ref{fig:step-convergence} are floored at machine
 epsilon only for logarithmic display; the CSV files retain the raw errors.
+
+\clearpage
+\appendix
+\numberwithin{equation}{section}
+\input{multivariate_oti.tex}
 
 \clearpage
 \begingroup
