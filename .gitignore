@@ -13,3 +13,6 @@
 # Editor / OS noise
 .DS_Store
 *~
+
+# Local companion notes, not part of the deliverable
+docs/multivariate_walkthrough.*
