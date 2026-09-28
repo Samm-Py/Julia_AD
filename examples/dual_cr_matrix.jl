@@ -1,4 +1,4 @@
-# Section 4 of docs/ctse_dual_cr_examples.pdf: the matrix sine of tH at t = 1 in dual CR form.
+# Section 4 of ctse_dual_cr_examples.pdf: the matrix sine of tH at t = 1 in dual CR form.
 
 using LinearAlgebra
 H = [0.0 1.0; -1.0 0.0]

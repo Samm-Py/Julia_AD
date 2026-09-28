@@ -1,4 +1,4 @@
-# Section 3 of docs/ctse_dual_cr_examples.pdf: sin(x) at x = 1 in dual arithmetic.
+# Section 3 of ctse_dual_cr_examples.pdf: sin(x) at x = 1 in dual arithmetic.
 
 struct Dual <: Real
     a::Float64   # value

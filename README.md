@@ -7,8 +7,8 @@ repository computes the first derivatives two ways: complex Taylor series
 expansion (CTSE, the complex step) and dual numbers in real Cauchy–Riemann (CR)
 matrix form.
 
-Start with [worked examples of CTSE and dual numbers in CR form](docs/ctse_dual_cr_examples.pdf)
-([LaTeX source](docs/ctse_dual_cr_examples.tex)). It walks through scalar
+Start with [worked examples of CTSE and dual numbers in CR form](ctse_dual_cr_examples.pdf)
+([LaTeX source](ctse_dual_cr_examples.tex)). It walks through scalar
 `sin(x)` and matrix `sin(X)` with each method, shows where CTSE breaks for
 matrix functions, and reports both methods' results for the thermal model
 against 256-bit references.
@@ -32,7 +32,6 @@ Run from the repository root with the existing project environment:
 julia --project=. examples/thermal.jl
 julia --project=. test/runtests.jl
 julia --project=. docs/verify_ctse_dual_cr_examples.jl
-cd docs
 pdflatex -interaction=nonstopmode -halt-on-error ctse_dual_cr_examples.tex
 pdflatex -interaction=nonstopmode -halt-on-error ctse_dual_cr_examples.tex
 ```

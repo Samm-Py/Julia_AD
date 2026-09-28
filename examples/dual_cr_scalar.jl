@@ -1,4 +1,4 @@
-# Section 3 of docs/ctse_dual_cr_examples.pdf: sin(x) at x = 1 with a dual number in CR form.
+# Section 3 of ctse_dual_cr_examples.pdf: sin(x) at x = 1 with a dual number in CR form.
 
 using LinearAlgebra
 x0 = 1.0

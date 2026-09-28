@@ -1,4 +1,4 @@
-# Section 1 of docs/ctse_dual_cr_examples.pdf: CTSE for f(x) = sin(x) at x = 1.
+# Section 1 of ctse_dual_cr_examples.pdf: CTSE for f(x) = sin(x) at x = 1.
 
 x0, h = 1.0, 1e-20
 f(x) = sin(x)

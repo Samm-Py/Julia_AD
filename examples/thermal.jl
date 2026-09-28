@@ -1,4 +1,4 @@
-# Thermal results in docs/ctse_dual_cr_examples.pdf. Run with: julia --project=. examples/thermal.jl
+# Thermal results in ctse_dual_cr_examples.pdf. Run with: julia --project=. examples/thermal.jl
 
 include(joinpath(@__DIR__, "..", "src", "SensitivityComparison.jl"))
 using .SensitivityComparison

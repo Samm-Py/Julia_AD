@@ -12,7 +12,7 @@
 % Label a Julia calculation with its script and show the script below its header.
 \newcommand{\juliascript}[1]{\par\medskip\needspace{6\baselineskip}\noindent
   \textbf{Julia calculation} (\nolinkurl{examples/#1}).\par
-  \lstinputlisting[firstline=3]{../examples/#1}}
+  \lstinputlisting[firstline=3]{examples/#1}}
 \begin{document}
 \begin{center}
 {\LARGE CTSE and dual numbers in CR form\par}
@@ -113,7 +113,7 @@ it is $\cos(1)+\tfrac16\cos(1)h^2+O(h^4)$.
 \juliascript{ctse_scalar.jl}
 \paragraph{Compare with the analytical result.}
 Direct differentiation gives $f'(x)=\cos(x)$. At $x=1$, the comparison is
-\input{ctse_scalar_comparison.tex}%
+\input{docs/ctse_scalar_comparison.tex}%
 The real part approximates the value with an $O(h^2)$ error too. An ordinary
 real evaluation supplies the nominal value if needed independently of $h$.
 
@@ -184,7 +184,7 @@ entries $\pm\sin(1)$ instead of $\pm\sinh(1)$ at the real input.
 Step 2 showed that $F(t)=\sin(tH)=H\sinh(t)$ for this $H$. Differentiating
 with $H$ fixed gives $F'(t)=H\cosh(t)$. At $t=1$, the matrices computed above
 compare as follows (six decimal places):
-\input{ctse_matrix_comparison.tex}%
+\input{docs/ctse_matrix_comparison.tex}%
 
 \paragraph{Where CTSE breaks.}
 The calculation above gives the correct derivative, but only because of the
@@ -324,7 +324,7 @@ Now substitute $x_0=1$ to obtain $f(1)=\sin(1)$ and $f'(1)=\cos(1)$.
 \paragraph{Compare with the analytical result.}
 Direct differentiation of $f(x)=\sin(x)$ gives $f'(x)=\cos(x)$.
 At $x=1$, the entries extracted from $Y$ compare as follows:
-\input{dual_cr_scalar_comparison.tex}%
+\input{docs/dual_cr_scalar_comparison.tex}%
 The derivative is exact in dual arithmetic; the numerical matrix sine
 still introduces floating-point error. There is no $h$ to choose or divide by.
 These are the same numbers CTSE produced in Section~\ref{sec:ctse-scalar}:
@@ -423,7 +423,7 @@ This is forward-mode differentiation encoded in real block arithmetic.
 As in Section~\ref{sec:ctse-matrix}, $F(t)=\sin(tH)=H\sinh(t)$ for this $H$,
 so $F'(t)=H\cosh(t)$. At $t=1$, the extracted blocks compare as follows
 (six decimal places):
-\input{dual_cr_matrix_comparison.tex}%
+\input{docs/dual_cr_matrix_comparison.tex}%
 
 \paragraph{Beyond first derivatives.}
 Dual numbers are the first-order case of order-truncated imaginary (OTI)
@@ -485,22 +485,9 @@ $21\times21$ matrix exponential and first-order CR one real $42\times42$
 exponential. The table compares both with a reference that evaluates
 $\exp(tH)z$ and its derivative $H\exp(tH)z$ in 256-bit arithmetic.
 \juliascript{thermal.jl}
-\input{thermal_comparison.tex}%
+\input{docs/thermal_comparison.tex}%
 Voxel~1, heated by the input, warms fastest; voxels 9 and 10, which start
 hot, are cooling.
-
-\paragraph{If the matrix changes in another direction.}
-For a general matrix input $X$ and specified change $E$, the derivative means
-$D\mathcal F(X)[E]=\left.\frac{d}{ds}\sin(X+sE)\right|_{s=0}$.
-CTSE seeds $X+\ii hE$; dual CR seeds
-$\left[\begin{smallmatrix}X&0\\E&X\end{smallmatrix}\right]$.
-The imaginary part of the sine divided by $h$ approximates that directional
-derivative if the sine routine is safe for CTSE
-(Section~\ref{sec:ctse-matrix}); the lower-left block of the CR sine gives it
-directly. A full derivative with
-respect to every matrix entry requires additional directions. The shortcut
-$E\cos(X)$ is valid when $XE=EX$, as in our $X=tH$, $E=H$ example;
-the general block construction does not require that equality.
 
 \paragraph{Reproduce the examples.}
 Each Julia calculation above is a script in \texttt{examples/}, shown verbatim
@@ -516,12 +503,4 @@ Section~\ref{sec:ctse-matrix}, and checks the first derivatives of the thermal
 response against the ODE. It also regenerates the five comparison tables,
 including the thermal results, from the computed results.
 
-\paragraph{Further reading.}
-The \href{https://mdolab.engin.umich.edu/wiki/guide-complex-step-derivative-approximation}{MDO Lab complex-step guide}
-explains CTSE implementation.
-\href{https://doi.org/10.1007/s11075-009-9323-y}{Al-Mohy and Higham} analyse
-when CTSE is valid for matrix functions, including routines that use complex
-arithmetic internally. General matrix functions and their derivatives
-are discussed by
-\href{https://eprints.maths.manchester.ac.uk/2067/1/paper.pdf}{Higham and Lin}.
 \end{document}

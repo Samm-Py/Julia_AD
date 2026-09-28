@@ -185,17 +185,6 @@ end
         println()
     end
 
-    # Check the general-direction statement where X and E do not commute.
-    # At diagonal X, Dsin(X)[E]_ij = E_ij*(sin(X_ii)-sin(X_jj))/(X_ii-X_jj),
-    # or E_ij*cos(X_ii) when X_ii == X_jj. CTSE is not checked here: whether it
-    # works depends on the sine routine (see the end of Example 2).
-    X = [0.0 0.0; 0.0 1.0]
-    E = [1.0 1.0; 1.0 1.0]
-    @test X*E != E*X
-    expected = [cos(0.0) sin(1.0); sin(1.0) cos(1.0)]
-    general_cr = sin([X zeros(2, 2); E X])[3:4, 1:2]
-    @test general_cr ≈ expected rtol=1e-13
-
     # Verify the link to the actual implementation, including nonzero forcing.
     model = thermal_example()
     (; A, B, x, u, dt) = model
