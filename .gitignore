@@ -14,5 +14,5 @@
 .DS_Store
 *~
 
-# Local companion notes, not part of the deliverable
-docs/multivariate_walkthrough.*
+# Higher-order material kept locally, outside the repository
+/Julia_AD_higher_order/
