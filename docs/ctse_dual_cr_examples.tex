@@ -1,0 +1,527 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{amsmath,amssymb,booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{listings}
+\usepackage{needspace}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue]{hyperref}
+\lstset{basicstyle=\ttfamily\small,columns=fullflexible,keepspaces=true,
+  frame=single,breaklines=true,aboveskip=0.7em,belowskip=0.7em}
+\newcommand{\ii}{\mathrm i}
+% Label a Julia calculation with its script and show the script below its header.
+\newcommand{\juliascript}[1]{\par\medskip\needspace{6\baselineskip}\noindent
+  \textbf{Julia calculation} (\nolinkurl{examples/#1}).\par
+  \lstinputlisting[firstline=3]{../examples/#1}}
+\begin{document}
+\begin{center}
+{\LARGE CTSE and dual numbers in CR form\par}
+\smallskip
+{\large Four worked examples for timestep sensitivities\par}
+\end{center}
+
+\section*{Background: what are we trying to compute?}
+The code in this repository advances a thermal model through a timestep $t$.
+We want both the final temperatures and their derivatives with respect to $t$:
+how quickly would those temperatures change if the timestep changed, while
+the starting temperatures, model matrices, input, and forcing stayed fixed?
+
+This note explains the calculation using four examples: the scalar function
+$f(x)=\sin(x)$ and the matrix function $\mathcal F(X)=\sin(X)$ evaluated by
+CTSE, then the same two functions evaluated
+using dual numbers in a real Cauchy--Riemann (CR) representation. We keep only
+\textbf{first derivatives}.
+
+\paragraph{Automatic differentiation (AD).}
+AD carries a value and its derivative through a calculation, applying the
+chain rule at each operation. For a sine operation $y=\sin(x)$, forward-mode
+AD carries the input derivative $\dot x$ to the output derivative
+$\dot y=\cos(x)\dot x$. Seeding $\dot x=1$ gives $dy/dx=\cos(x)$.
+Dual numbers provide arithmetic that does this automatically; their CR form
+lets us perform that arithmetic with ordinary real matrices.
+
+\paragraph{Why not just use finite differences?}
+A centered finite difference estimates the derivative using two evaluations:
+\[
+ f'(t)\approx\frac{f(t+h)-f(t-h)}{2h}.
+\]
+Its truncation error decreases like $h^2$, but sufficiently small $h$ makes
+the numerator a subtraction of nearly equal numbers. Rounding errors can
+then dominate. This motivates methods that carry derivative information
+within an evaluation.
+
+\paragraph{Complex Taylor series expansion (CTSE).}
+For an analytic function that is real on real inputs, replace $t$ by $t+\ii h$,
+where $\ii^2=-1$. Taylor expansion gives
+\[
+ f(t+\ii h)=f(t)+\ii h f'(t)-\frac{h^2}{2}f''(t)
+              -\frac{\ii h^3}{6}f'''(t)+\cdots.
+\]
+Consequently,
+\[
+ \boxed{f'(t)\approx\frac{\operatorname{Im}f(t+\ii h)}{h}}.
+\]
+This estimate has error of order $h^2$ without subtracting nearby function
+values. CTSE is a numerical approximation; dual-number AD propagates the
+first derivative without a finite step. Both still incur floating-point error.
+
+\paragraph{How to read the examples.}
+Each follows \emph{seed the input $\rightarrow$ evaluate $\rightarrow$ extract}.
+The formulas supply a reference that can be checked by hand. The Julia snippets
+compute the derivative from the seeded evaluation, without using that reference.
+
+\section{CTSE: a scalar input}\label{sec:ctse-scalar}
+Let
+\[
+ f(x)=\sin(x),\qquad x_0=1.
+\]
+The reference value and derivative are
+$f(1)=\sin 1$ and $f'(1)=\cos 1$ (angles in radians).
+
+\paragraph{1. Seed the input.}
+Choose a small real step $h>0$ and set $\widetilde x=1+\ii h$.
+The imaginary part tags the change in the input.
+
+\paragraph{2. Evaluate the sine.}
+The complex sine identity is
+\[
+ \sin(a+\ii b)=\sin(a)\cosh(b)+\ii\cos(a)\sinh(b).
+\]
+Applying it to the seeded input gives
+\[
+ \widetilde y=\sin(\widetilde x)
+   =\sin(1)\cosh(h)+\ii\cos(1)\sinh(h).
+\]
+Here $\sinh$ and $\cosh$ are the hyperbolic sine and cosine.
+This identity explains the result; it does not need to be implemented
+explicitly. If the function's code supports complex inputs throughout and
+preserves the imaginary part, the complex arithmetic propagates automatically.
+For this example, simply evaluate \texttt{sin(1 + im*h)}.
+
+\paragraph{3. Extract the value and derivative.}
+\[
+ \boxed{\begin{aligned}
+ f(1)&\approx\operatorname{Re}\widetilde y
+       =\sin(1)\cosh(h),\\
+ f'(1)&\approx\frac{\operatorname{Im}\widetilde y}{h}
+       =\cos(1)\frac{\sinh(h)}{h}.
+ \end{aligned}}
+\]
+As $h$ decreases, the extracted derivative approaches $\cos 1$. More precisely,
+it is $\cos(1)+\tfrac16\cos(1)h^2+O(h^4)$.
+
+\juliascript{ctse_scalar.jl}
+\paragraph{Compare with the analytical result.}
+Direct differentiation gives $f'(x)=\cos(x)$. At $x=1$, the comparison is
+\input{ctse_scalar_comparison.tex}%
+The real part approximates the value with an $O(h^2)$ error too. An ordinary
+real evaluation supplies the nominal value if needed independently of $h$.
+
+\paragraph{What the code must preserve.}
+The imaginary part must survive every operation. Taking an absolute value,
+conjugating an input, or converting an intermediate result to real arithmetic
+can invalidate CTSE. The step $10^{-20}$ works for these examples; accuracy
+also depends on the numerical routine used to evaluate the function.
+
+\section{CTSE: a matrix input}\label{sec:ctse-matrix}
+Consider the matrix function $\mathcal F(X)=\sin(X)$, where
+\[
+ \sin(X)=X-\frac{X^3}{3!}+\frac{X^5}{5!}-\cdots.
+\]
+This is a \emph{matrix sine}: the powers use matrix multiplication.
+Let the input matrix depend on the scalar $t$ through $X(t)=tH$, where $H$
+is a fixed matrix. In this example,
+\[
+ H=\begin{bmatrix}0&1\\-1&0\end{bmatrix},\qquad
+ X(t)=tH,\qquad F(t)=\mathcal F(X(t)),\qquad t_0=1.
+\]
+Thus we seek the derivative of $\sin(X(t))$ with respect to $t$.
+The input has the same timestep dependence as in the thermal code; here we
+apply sine to illustrate the differentiation method.
+
+\paragraph{1. Seed the matrix input.}
+Replace $t=1$ by $t=1+\ii h$ in $X(t)=tH$. This gives the complex matrix input
+\[
+ \widetilde X=(1+\ii h)H
+ =\begin{bmatrix}0&1+\ii h\\-1-\ii h&0\end{bmatrix}.
+\]
+The upper-right entry changes from $1$ to $1+\ii h$, and the lower-left entry
+changes from $-1$ to $-1-\ii h$. The diagonal entries remain zero.
+
+\paragraph{2. Evaluate the matrix sine.}
+Substitute $X=tH$ into the sine series. Since $t$ is a scalar,
+$(tH)^k=t^kH^k$. Also, $H^2=-I$, so $H^3=-H$, $H^5=H$,
+and the odd powers continue to alternate in sign. Thus
+\begin{align*}
+ \sin(tH)
+ &=tH-\frac{(tH)^3}{3!}+\frac{(tH)^5}{5!}-\cdots\\
+ &=tH-\frac{t^3(-H)}{3!}+\frac{t^5H}{5!}-\cdots\\
+ &=H\left(t+\frac{t^3}{3!}+\frac{t^5}{5!}+\cdots\right)
+ =H\sinh(t).
+\end{align*}
+Substituting $t=1+\ii h$, use
+$\sinh(1+\ii h)=\sinh(1)\cos(h)+\ii\cosh(1)\sin(h)$ to obtain
+\[
+ \sin(\widetilde X)=H\sinh(1)\cos(h)+\ii H\cosh(1)\sin(h).
+\]
+This algebra explains the result; it need not be implemented explicitly.
+Julia evaluates \texttt{sin((1 + im*h)*H)} directly, and for this input the
+result is correct. The end of this section explains why that cannot be taken
+for granted.
+
+\paragraph{3. Extract a matrix of derivatives.}
+Divide each imaginary entry by $h$. Since $\sin(h)/h=1+O(h^2)$,
+\[
+ \boxed{\frac{\operatorname{Im}\sin(\widetilde X)}{h}
+ =H\cosh(1)\frac{\sin(h)}{h}\approx F'(1)=H\cosh(1).}
+\]
+\juliascript{ctse_matrix.jl}
+Julia's \texttt{sin(X)} computes the matrix sine. Applying \texttt{sin.(X)}
+entry by entry computes a different function: here it would give off-diagonal
+entries $\pm\sin(1)$ instead of $\pm\sinh(1)$ at the real input.
+
+\paragraph{Compare with the analytical result.}
+Step 2 showed that $F(t)=\sin(tH)=H\sinh(t)$ for this $H$. Differentiating
+with $H$ fixed gives $F'(t)=H\cosh(t)$. At $t=1$, the matrices computed above
+compare as follows (six decimal places):
+\input{ctse_matrix_comparison.tex}%
+
+\paragraph{Where CTSE breaks.}
+The calculation above gives the correct derivative, but only because of the
+structure of this example. Keep the same $H$ and move the input in a
+different direction:
+\[
+ X(t)=H+tI,\qquad F(t)=\sin(H+tI),\qquad t_0=0.
+\]
+The exact derivative is $F'(0)=I\cosh(1)$. The CTSE seed is
+$\widetilde X=H+\ii hI$, but with $h=10^{-20}$,
+\texttt{imag.(sin(H + im*h*I))/h} returns the zero matrix, without any error
+or warning.
+
+\paragraph{Why the imaginary part is lost.}
+For a complex matrix, Julia computes the sine from two exponentials:
+\[
+ \sin(\widetilde X)=\frac{e^{\ii\widetilde X}-e^{-\ii\widetilde X}}{2\ii}.
+\]
+The $\ii$ in this formula is the implementation's own complex variable. It
+interacts with the complex variable that carries the derivative, and the
+derivative information is lost.
+
+\paragraph{Which matrix routines are safe.}
+CTSE requires the complex step to be the only source of imaginary parts, with
+every operation the complex version of its real counterpart. Sums, products
+and linear solves meet this requirement. So does the matrix exponential in the
+thermal code, which is built from them; its CTSE results are unaffected.
+Routines that introduce complex numbers of their own do not: the sine and
+cosine above, and square roots, logarithms and other functions computed from
+eigenvectors or a complex Schur factorization. They fail silently, returning
+zeros or meaningless values.
+
+\paragraph{From complex steps to dual numbers.}
+The conflict arises because CTSE and the routine both use $\ii$. Dual numbers
+in CR form avoid it by carrying the derivative in a real block matrix, so
+there is no second $\ii$ to collide with. Julia's matrix sine can then be used
+as it is, even though it works through complex exponentials internally.
+
+\section{Dual numbers in CR form: a scalar input}
+A dual number is $a+b\varepsilon$, where $\varepsilon$ is a new unit with
+$\varepsilon\neq0$ but $\varepsilon^2=0$. Dual numbers add and multiply like
+polynomials in $\varepsilon$, with every $\varepsilon^2$ term dropped:
+\[
+ (a+b\varepsilon)+(c+d\varepsilon)=(a+c)+(b+d)\varepsilon,\qquad
+ (a+b\varepsilon)(c+d\varepsilon)=ac+(ad+bc)\varepsilon.
+\]
+The $\varepsilon$ part of the product follows the product rule. For a smooth
+function, the Taylor series in $\varepsilon$ stops after the linear term:
+\[
+ f(a+b\varepsilon)=f(a)+f'(a)\,b\,\varepsilon.
+\]
+Seeding $b=1$ therefore carries the derivative in the $\varepsilon$ part,
+exactly and without a step size.
+
+\paragraph{Worked example: $\sin(x)$ in dual arithmetic.}
+Seed $\widetilde x=1+\varepsilon$: value $1$, derivative seed $1$. Expanding
+the sine,
+\[
+ \sin(1+\varepsilon)
+ =\sin(1)+\cos(1)\,\varepsilon-\frac{\sin(1)}{2!}\varepsilon^2-\cdots
+ =\sin(1)+\cos(1)\,\varepsilon,
+\]
+since $\varepsilon^2,\varepsilon^3,\ldots$ all vanish. The real part is
+$f(1)=\sin(1)$ and the $\varepsilon$ part is $f'(1)=\cos(1)$. In CTSE,
+$\ii^2=-1$ keeps the higher-order terms, which is the source of its $O(h^2)$
+error; here they vanish exactly, and nothing is divided by $h$.
+
+\juliascript{dual_scalar.jl}
+
+\paragraph{Why not implement dual numbers directly?}
+The snippet works because it teaches Julia one rule: how the sine acts on a
+dual number. A real code needs such a rule for every operation it uses
+(addition, multiplication, division and each elementary function), and every
+variable along the calculation must change to the dual type. Complex numbers
+are built into programming languages and numerical libraries, which is why
+CTSE needs little more than a complex input. Dual numbers are not. Library
+routines are the harder obstacle: Julia's matrix exponential and sine are
+implemented only for the floating-point types that LAPACK supports, so even a
+dual type with full arithmetic cannot be passed to them.
+
+\paragraph{The remedy: the CR form.}
+Dual numbers can instead be represented by real matrices, so that existing
+real routines do the dual arithmetic. In the lower triangular Cauchy--Riemann
+(CR) convention used by this repository,
+\[
+ \boxed{a+b\varepsilon\ \longmapsto\ C(a+b\varepsilon)
+       =\begin{bmatrix}a&0\\b&a\end{bmatrix}.}
+\]
+Replacing $\varepsilon$ by $N=\left[\begin{smallmatrix}0&0\\1&0\end{smallmatrix}\right]$
+preserves $\varepsilon^2=0$, because $N^2=0$. Matrix addition and
+multiplication then reproduce dual-number arithmetic, and so does any function
+given by a power series, including the matrix sine. No new number type is
+needed: the code only has to accept real matrices.
+
+\paragraph{1. Seed the same scalar function.}
+For $f(x)=\sin(x)$ at $x=x_0$, use $x_0+\varepsilon$, represented by
+\[
+ S=\begin{bmatrix}x_0&0\\1&x_0\end{bmatrix}=x_0I+N.
+\]
+
+\paragraph{2. Evaluate the sine.}
+Start with the powers of $S$. Squaring gives
+\[
+ S^2=\begin{bmatrix}x_0&0\\1&x_0\end{bmatrix}
+     \begin{bmatrix}x_0&0\\1&x_0\end{bmatrix}
+    =\begin{bmatrix}x_0^2&0\\2x_0&x_0^2\end{bmatrix},
+\]
+and continuing in this way, for $k\geq1$,
+\[
+ S^k=\begin{bmatrix}x_0^k&0\\k\,x_0^{k-1}&x_0^k\end{bmatrix}.
+\]
+The lower-left entry is the derivative of $x_0^k$: matrix multiplication
+applies the product rule, exactly as dual multiplication did. Now substitute
+these powers into the sine series:
+\begin{align*}
+ Y=\sin(S)
+ &=S-\frac{S^3}{3!}+\frac{S^5}{5!}-\cdots\\
+ &=\begin{bmatrix}
+ x_0-\dfrac{x_0^3}{3!}+\dfrac{x_0^5}{5!}-\cdots & 0\\[8pt]
+ 1-\dfrac{3x_0^2}{3!}+\dfrac{5x_0^4}{5!}-\cdots &
+ x_0-\dfrac{x_0^3}{3!}+\dfrac{x_0^5}{5!}-\cdots
+ \end{bmatrix}
+ =\begin{bmatrix}\sin(x_0)&0\\\cos(x_0)&\sin(x_0)\end{bmatrix}.
+\end{align*}
+The diagonal entries are the sine series. In the lower-left entry, the factors
+$3,5,\ldots$ simplify against the factorials, leaving the cosine series.
+Julia's matrix sine evaluates \texttt{sin(S)} directly; no dual-number type or
+Taylor expansion has to be implemented.
+
+\paragraph{3. Read the first column.}
+\[
+ \boxed{f(x_0)=Y_{11}=\sin(x_0),\qquad f'(x_0)=Y_{21}=\cos(x_0).}
+\]
+Now substitute $x_0=1$ to obtain $f(1)=\sin(1)$ and $f'(1)=\cos(1)$.
+
+\juliascript{dual_cr_scalar.jl}
+\paragraph{Compare with the analytical result.}
+Direct differentiation of $f(x)=\sin(x)$ gives $f'(x)=\cos(x)$.
+At $x=1$, the entries extracted from $Y$ compare as follows:
+\input{dual_cr_scalar_comparison.tex}%
+The derivative is exact in dual arithmetic; the numerical matrix sine
+still introduces floating-point error. There is no $h$ to choose or divide by.
+These are the same numbers CTSE produced in Section~\ref{sec:ctse-scalar}:
+with $h=10^{-20}$, its $O(h^2)$ error is about $10^{-41}$, far below rounding.
+For first derivatives, the two methods differ in robustness rather than
+accuracy.
+
+\section{Dual numbers in CR form: a matrix input}\label{sec:cr-matrix}
+Return to $\mathcal F(X)=\sin(X)$ with $X(t)=tH$ and
+$H=\left[\begin{smallmatrix}0&1\\-1&0\end{smallmatrix}\right]$ at $t_0=1$.
+The physical input is a $2\times2$ matrix. Its CR representation is a
+$4\times4$ real matrix containing both value and derivative information.
+
+\paragraph{1. Seed the matrix input.}
+First seed the scalar timestep, just as in the scalar example:
+\[
+ t_0\ \longmapsto\ T=t_0I_2+N
+ =\begin{bmatrix}t_0&0\\1&t_0\end{bmatrix},\qquad
+ N=\begin{bmatrix}0&0\\1&0\end{bmatrix}.
+\]
+For $X(t)=tH$, form its CR representation by multiplying each entry of $T$
+by $H$:
+\[
+ \mathcal M=T\otimes H
+ =\begin{bmatrix}t_0H&0\\H&t_0H\end{bmatrix}.
+\]
+This construction is the Kronecker product, written \texttt{kron(T, H)} in
+Julia. Now substitute $t_0=1$:
+\[
+ \boxed{\mathcal M=\begin{bmatrix}H&0\\H&H\end{bmatrix}}
+ =\left[\begin{array}{cc|cc}
+   0&1&0&0\\-1&0&0&0\\\hline
+   0&1&0&1\\-1&0&-1&0
+ \end{array}\right].
+\]
+
+\paragraph{2. Evaluate one real matrix sine.}
+First square $\mathcal M$ using ordinary block multiplication:
+\[
+ \mathcal M^2
+ =\begin{bmatrix}H&0\\H&H\end{bmatrix}
+  \begin{bmatrix}H&0\\H&H\end{bmatrix}
+ =\begin{bmatrix}H^2&0\\HH+HH&H^2\end{bmatrix}
+ =\begin{bmatrix}H^2&0\\2H^2&H^2\end{bmatrix}.
+\]
+Multiplying once more gives
+\[
+ \mathcal M^3=\mathcal M^2\mathcal M
+ =\begin{bmatrix}H^3&0\\2H^3+H^3&H^3\end{bmatrix}
+ =\begin{bmatrix}H^3&0\\3H^3&H^3\end{bmatrix}.
+\]
+Continuing in this way gives, for $k\geq1$,
+\[
+ \mathcal M^k=\begin{bmatrix}H^k&0\\kH^k&H^k\end{bmatrix}.
+\]
+Now substitute these powers into the matrix sine series:
+\begin{align*}
+ \sin(\mathcal M)
+ &=\mathcal M-\frac{\mathcal M^3}{3!}+\frac{\mathcal M^5}{5!}-\cdots\\
+ &=\begin{bmatrix}
+ H-\dfrac{H^3}{3!}+\dfrac{H^5}{5!}-\cdots & 0\\[8pt]
+ H-\dfrac{3H^3}{3!}+\dfrac{5H^5}{5!}-\cdots &
+ H-\dfrac{H^3}{3!}+\dfrac{H^5}{5!}-\cdots
+ \end{bmatrix}.
+\end{align*}
+Each diagonal block is the series for $\sin(H)$. In the lower-left block,
+the factors $3,5,\ldots$ simplify against the factorials:
+\[
+ H-\frac{3H^3}{3!}+\frac{5H^5}{5!}-\cdots
+ =H\left(I-\frac{H^2}{2!}+\frac{H^4}{4!}-\cdots\right)
+ =H\cos(H).
+\]
+For our matrix $H$, $H^2=-I$, so $\sin(H)=H\sinh(1)$ and
+$\cos(H)=I\cosh(1)$. Writing $s=\sinh(1)$ and $c=\cosh(1)$, the result is
+\[
+ \sin(\mathcal M)=
+ \begin{bmatrix}\sin(H)&0\\H\cos(H)&\sin(H)\end{bmatrix}
+ =\left[\begin{array}{cc|cc}
+   0&s&0&0\\-s&0&0&0\\\hline
+   0&c&0&s\\-c&0&-s&0
+ \end{array}\right].
+\]
+As in the scalar example, a matrix sine routine evaluates
+$\sin(\mathcal M)$ directly; the series above explains that result.
+
+\paragraph{3. Read the first block column.}
+\[
+ \boxed{F(1)=\sin(\mathcal M)_{1:2,\,1:2},\qquad
+ F'(1)=\sin(\mathcal M)_{3:4,\,1:2}.}
+\]
+\juliascript{dual_cr_matrix.jl}
+The lower-left block carries the chain rule through the matrix sine.
+This is forward-mode differentiation encoded in real block arithmetic.
+
+\paragraph{Compare with the analytical result.}
+As in Section~\ref{sec:ctse-matrix}, $F(t)=\sin(tH)=H\sinh(t)$ for this $H$,
+so $F'(t)=H\cosh(t)$. At $t=1$, the extracted blocks compare as follows
+(six decimal places):
+\input{dual_cr_matrix_comparison.tex}%
+
+\paragraph{Beyond first derivatives.}
+Dual numbers are the first-order case of order-truncated imaginary (OTI)
+numbers. The same CR construction carries derivatives of any order, with
+respect to any number of parameters, still in one evaluation of a real matrix
+function.
+
+\section*{Choosing between CTSE and dual CR}
+For first derivatives, both methods reach full double precision. CTSE needs a
+step $h$ and a routine that is safe for CTSE (Section~\ref{sec:ctse-matrix}),
+and in its basic form it gives only first derivatives. Dual CR has no step,
+works with ordinary real routines, and extends to any order and any number of
+parameters (end of Section~\ref{sec:cr-matrix}). Its price is size: the matrix doubles in dimension,
+and a dense matrix function then costs roughly twice as much as with CTSE.
+Routines that diagonalize their input do not suit dual CR: the CR matrix
+cannot be diagonalized, and such routines lose about half the digits.
+
+\section*{Connecting the examples to this repository}
+The examples use sine; the thermal model uses a matrix exponential. The same
+seeding and extraction steps apply to both functions. The model uses
+\[
+ H=\begin{bmatrix}A&B&I_n\\0&0&0\\0&0&0\end{bmatrix},\qquad
+ z=\begin{bmatrix}x\\u\\e\end{bmatrix},\qquad
+ R(t)=\bigl[\exp(tH)z\bigr]_{1:n}.
+\]
+Here $A$ describes thermal dynamics, $B$ the input coupling, $x$ the initial
+temperatures, $u$ the fixed input, and $e$ the fixed forcing vector.
+The first $n$ entries give the temperatures after time $t$; the remaining
+augmented components keep the input and forcing constant.
+
+\paragraph{CTSE in the code.}
+\texttt{ctse\_response} in \texttt{src/SensitivityComparison.jl} evaluates
+\texttt{response} at $t+\ii h$, then extracts
+\[
+ R(t)\approx\operatorname{Re}R(t+\ii h),\qquad
+ R'(t)\approx\operatorname{Im}R(t+\ii h)/h.
+\]
+This follows the matrix CTSE example with the exponential in place of sine,
+then multiplication and selection of the temperature entries.
+
+\paragraph{Dual numbers in the code.}
+With \texttt{order=1}, \texttt{oti\_response} in \texttt{src/OTISensitivity.jl}
+constructs \texttt{oti\_matrix([t, 1.0])}, which is exactly
+$T=\left[\begin{smallmatrix}t&0\\1&t\end{smallmatrix}\right]$.
+It exponentiates \texttt{kron(T, H)}. If $m$ is the size of $H$ and $G$ is
+that exponential, the extraction is
+\[
+ R(t)=G_{1:n,\,1:m}z,\qquad
+ R'(t)=G_{m+1:m+n,\,1:m}z.
+\]
+The returned \texttt{derivatives[:, 1]} contains temperatures and
+\texttt{derivatives[:, 2]} their timestep derivatives.
+
+\paragraph{Results for the thermal model.}
+The example model has ten voxels in a row. All start at 300~K except
+voxel~10, at 900~K, and voxel~1 receives a constant heat input; there is no
+forcing. With a timestep of $t=50$~s, CTSE evaluates one complex
+$21\times21$ matrix exponential and first-order CR one real $42\times42$
+exponential. The table compares both with a reference that evaluates
+$\exp(tH)z$ and its derivative $H\exp(tH)z$ in 256-bit arithmetic.
+\juliascript{thermal.jl}
+\input{thermal_comparison.tex}%
+Voxel~1, heated by the input, warms fastest; voxels 9 and 10, which start
+hot, are cooling.
+
+\paragraph{If the matrix changes in another direction.}
+For a general matrix input $X$ and specified change $E$, the derivative means
+$D\mathcal F(X)[E]=\left.\frac{d}{ds}\sin(X+sE)\right|_{s=0}$.
+CTSE seeds $X+\ii hE$; dual CR seeds
+$\left[\begin{smallmatrix}X&0\\E&X\end{smallmatrix}\right]$.
+The imaginary part of the sine divided by $h$ approximates that directional
+derivative if the sine routine is safe for CTSE
+(Section~\ref{sec:ctse-matrix}); the lower-left block of the CR sine gives it
+directly. A full derivative with
+respect to every matrix entry requires additional directions. The shortcut
+$E\cos(X)$ is valid when $XE=EX$, as in our $X=tH$, $E=H$ example;
+the general block construction does not require that equality.
+
+\paragraph{Reproduce the examples.}
+Each Julia calculation above is a script in \texttt{examples/}, shown verbatim
+apart from a one-line header. From the repository root, run one of them, or the
+verification script that runs them all:
+\begin{lstlisting}
+julia --project=. examples/thermal.jl
+julia --project=. docs/verify_ctse_dual_cr_examples.jl
+\end{lstlisting}
+The verification script checks all four examples against their explicit
+formulas, confirms the CTSE failure at the end of
+Section~\ref{sec:ctse-matrix}, and checks the first derivatives of the thermal
+response against the ODE. It also regenerates the five comparison tables,
+including the thermal results, from the computed results.
+
+\paragraph{Further reading.}
+The \href{https://mdolab.engin.umich.edu/wiki/guide-complex-step-derivative-approximation}{MDO Lab complex-step guide}
+explains CTSE implementation.
+\href{https://doi.org/10.1007/s11075-009-9323-y}{Al-Mohy and Higham} analyse
+when CTSE is valid for matrix functions, including routines that use complex
+arithmetic internally. General matrix functions and their derivatives
+are discussed by
+\href{https://eprints.maths.manchester.ac.uk/2067/1/paper.pdf}{Higham and Lin}.
+\end{document}
